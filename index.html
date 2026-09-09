@@ -27,11 +27,38 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap; /* Permite que se acomode en celulares */
+            gap: 15px;
         }
         h1 {
             color: var(--primary-color);
             margin: 0;
+            font-size: 1.8rem;
         }
+        
+        /* --- NUEVO ESTILO PARA EL STOCK --- */
+        .stock-container {
+            background-color: #e8f5e9;
+            border: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stock-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        .stock-value {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #1b5e20;
+        }
+        /* ---------------------------------- */
+
         .refresh-btn {
             background-color: var(--primary-color);
             color: white;
@@ -84,6 +111,13 @@
 
     <div class="header">
         <h1>Visor de Registros</h1>
+        
+        <!-- NUEVO CONTENEDOR DE STOCK -->
+        <div class="stock-container">
+            <span class="stock-title">Galones en Stock:</span>
+            <span id="stock-value" class="stock-value">...</span>
+        </div>
+
         <button class="refresh-btn" onclick="cargarDatos()">Actualizar Datos</button>
     </div>
 
@@ -99,31 +133,53 @@
     </div>
 
     <script>
-        // Tu ID de documento y GID
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
-        const gid = '481287721';
         
-        // URL secreta de Google para exportar hojas como JSON
-        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
+        // GID de la tabla de registros y GID de la hoja de stock
+        const gidRegistros = '481287721';
+        const gidStock = '252157837'; 
+        
+        // URLs para ambas consultas
+        const urlRegistros = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidRegistros}`;
+        const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1`;
 
         async function cargarDatos() {
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
+            const stockValueEl = document.getElementById('stock-value');
+            
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos actualizados...</td></tr>';
+            stockValueEl.innerText = '...';
 
+            // 1. CARGAR EL STOCK (Hoja "TABLA")
             try {
-                const response = await fetch(url);
+                const responseStock = await fetch(urlStock);
+                const textStock = await responseStock.text();
+                const jsonStringStock = textStock.substring(textStock.indexOf('({') + 1, textStock.lastIndexOf('})') + 1);
+                const dataStock = JSON.parse(jsonStringStock);
+                
+                // Extraer el valor de la celda A2
+                let stockCell = dataStock.table.rows[0].c[0];
+                let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
+                stockValueEl.innerText = stockText;
+
+            } catch (error) {
+                console.error('Error cargando el stock:', error);
+                stockValueEl.innerText = 'Error';
+            }
+
+            // 2. CARGAR LOS REGISTROS (Hoja normal)
+            try {
+                const response = await fetch(urlRegistros);
                 const text = await response.text();
                 
-                // Google devuelve un texto con formato de función, extraemos solo el JSON
                 const jsonString = text.substring(text.indexOf('({') + 1, text.lastIndexOf('})') + 1);
                 const data = JSON.parse(jsonString);
 
-                // Limpiar tabla
                 thead.innerHTML = '';
                 tbody.innerHTML = '';
 
-                // 1. Crear cabeceras
+                // Crear cabeceras
                 const headers = data.table.cols;
                 let trHead = document.createElement('tr');
                 headers.forEach(header => {
@@ -135,16 +191,14 @@
                 });
                 thead.appendChild(trHead);
 
-                // 2. Crear filas (Con .reverse() para mostrar los últimos primero)
+                // Crear filas (Con .reverse() para últimos primero)
                 const rows = data.table.rows.reverse(); 
                 
                 rows.forEach(row => {
                     let tr = document.createElement('tr');
                     row.c.forEach((cell, index) => {
-                        // Evitar columnas vacías al final si no hay cabecera
                         if (index < headers.length && headers[index].label) {
                             let td = document.createElement('td');
-                            // Si la celda tiene texto formateado (f) usamos ese, sino el valor crudo (v)
                             td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
                             tr.appendChild(td);
                         }
@@ -153,12 +207,12 @@
                 });
 
             } catch (error) {
-                console.error('Error cargando los datos:', error);
+                console.error('Error cargando los registros:', error);
                 tbody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Error al cargar los datos. Verifica que la hoja sea pública.</td></tr>';
             }
         }
 
-        // Cargar los datos automáticamente al abrir la página
+        // Cargar todo automáticamente al abrir
         window.onload = cargarDatos;
     </script>
 </body>
