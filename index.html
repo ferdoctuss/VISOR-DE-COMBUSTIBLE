@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Data de Combustible CVB</title>
     
-    <!-- ICONOS Y CONFIGURACIÓN PARA IPHONE (PANTALLA DE INICIO) -->
+    <!-- ICONOS Y CONFIGURACIÓN PARA IPHONE -->
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="icon" href="icono.png" type="image/png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,16 +32,38 @@
             width: 100%;
             max-width: 1000px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column; /* Apilado vertical para integrar pestañas */
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
             gap: 15px;
         }
+        
+        /* Contenedor del título y el botón de recarga */
+        .title-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
         h1 {
             color: var(--primary-color);
             margin: 0;
             font-size: 1.8rem;
+        }
+
+        /* Botón de recargar toda la página */
+        .reload-page-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .reload-page-btn:hover {
+            transform: rotate(90deg);
         }
         
         .stock-container {
@@ -51,8 +73,12 @@
             border-radius: 8px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
             gap: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
         .stock-title {
             font-weight: 600;
@@ -65,6 +91,31 @@
             color: #1b5e20;
         }
 
+        /* --- NUEVO DISEÑO PARA LAS PESTAÑAS (TABS) --- */
+        .tabs-container {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        /* --------------------------------------------- */
+
         .refresh-btn {
             background-color: var(--primary-color);
             color: white;
@@ -74,12 +125,15 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 1rem;
+            width: 100%;
+            max-width: 1000px;
             transition: background 0.3s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .refresh-btn:hover {
             background-color: #1b5e20;
         }
+        
         .table-container {
             width: 100%;
             max-width: 1000px;
@@ -117,28 +171,18 @@
         }
 
         /* ==================================================== */
-        /*  NUEVO DISEÑO DE "TARJETAS" PARA CELULARES (MOBILE)  */
+        /*  DISEÑO PARA CELULARES (MOBILE)                      */
         /* ==================================================== */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-                gap: 12px;
-            }
             h1 {
                 font-size: 1.5rem;
             }
-            .stock-title {
-                font-size: 0.95rem;
-            }
-            .stock-value {
-                font-size: 1.3rem;
-            }
-            .refresh-btn {
-                width: 100%;
-                font-size: 0.95rem;
-                padding: 10px;
+            .stock-title { font-size: 0.95rem; }
+            .stock-value { font-size: 1.3rem; }
+            
+            /* Pestañas apiladas en celular si el texto es muy largo */
+            .tabs-container {
+                flex-direction: column;
             }
             
             table {
@@ -157,7 +201,6 @@
                 left: -9999px;
             }
             
-            /* --- DISEÑO DE LAS TARJETAS --- */
             tr {
                 margin-bottom: 18px; 
                 border: 1px solid #b0bec5; 
@@ -201,13 +244,26 @@
 <body>
 
     <div class="header">
-        <h1>Data de Combustible CVB</h1>
         
+        <!-- TÍTULO Y BOTÓN DE RECARGA DE PÁGINA -->
+        <div class="title-bar">
+            <h1>Data de Combustible CVB</h1>
+            <button class="reload-page-btn" onclick="location.reload()" title="Recargar App Completa">🔄</button>
+        </div>
+        
+        <!-- STOCK -->
         <div class="stock-container">
             <span class="stock-title">Galones en Stock:</span>
             <span id="stock-value" class="stock-value">...</span>
         </div>
 
+        <!-- PESTAÑAS (TABS) PARA CAMBIAR DE HOJA -->
+        <div class="tabs-container">
+            <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
+            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
+        </div>
+
+        <!-- BOTÓN ACTUALIZAR DATOS ACTUALES -->
         <button class="refresh-btn" onclick="cargarDatos()">Actualizar Datos</button>
     </div>
 
@@ -224,11 +280,26 @@
 
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
-        const gidRegistros = '481287721';
         const gidStock = '252157837'; 
         
-        const urlRegistros = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidRegistros}`;
-        const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1`;
+        // GIDs de las dos hojas de datos
+        const gidRegistros = '481287721';
+        const gidIngresos = '690045193';
+
+        // Variable para saber qué pestaña está activa (por defecto inicia en registros)
+        let pestanaActiva = 'registros';
+
+        // Función para cambiar el estilo visual y cargar la nueva tabla
+        function cambiarPestana(pestana) {
+            pestanaActiva = pestana;
+            
+            // Cambiar los colores de los botones para saber cuál está seleccionado
+            document.getElementById('btn-registros').classList.toggle('active', pestana === 'registros');
+            document.getElementById('btn-ingresos').classList.toggle('active', pestana === 'ingresos');
+            
+            // Cargar los datos de la hoja correspondiente
+            cargarDatos();
+        }
 
         async function cargarDatos() {
             const tbody = document.getElementById('table-body');
@@ -238,6 +309,16 @@
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos actualizados...</td></tr>';
             stockValueEl.innerText = '...';
 
+            const noCache = new Date().getTime();
+            
+            // URL DEL STOCK
+            const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
+
+            // ELEGIR LA URL DEPENDIENDO DE LA PESTAÑA ACTIVA
+            const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
+            const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
+
+            // 1. Cargar Stock (Siempre se carga sin importar la pestaña)
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -247,14 +328,14 @@
                 let stockCell = dataStock.table.rows[0].c[0];
                 let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
                 stockValueEl.innerText = stockText;
-
             } catch (error) {
                 console.error('Error cargando el stock:', error);
                 stockValueEl.innerText = 'Error';
             }
 
+            // 2. Cargar Registros o Ingresos
             try {
-                const response = await fetch(urlRegistros);
+                const response = await fetch(urlTabla);
                 const text = await response.text();
                 
                 const jsonString = text.substring(text.indexOf('({') + 1, text.lastIndexOf('})') + 1);
@@ -274,6 +355,7 @@
                 });
                 thead.appendChild(trHead);
 
+                // SE MANTIENE .reverse() PARA QUE LOS ÚLTIMOS ESTÉN PRIMERO EN AMBAS TABLAS
                 const rows = data.table.rows.reverse(); 
                 
                 rows.forEach(row => {
@@ -283,7 +365,6 @@
                             let td = document.createElement('td');
                             
                             td.setAttribute('data-label', headers[index].label); 
-                            
                             td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
                             tr.appendChild(td);
                         }
@@ -293,10 +374,11 @@
 
             } catch (error) {
                 console.error('Error cargando los registros:', error);
-                tbody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Error al cargar los datos. Verifica que la hoja sea pública.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Error al cargar los datos.</td></tr>';
             }
         }
 
+        // Cargar todo al iniciar
         window.onload = cargarDatos;
     </script>
 </body>
