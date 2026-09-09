@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- El viewport ajustado previene el zoom automático al tocar botones en móviles -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Data de Combustible CVB</title>
     <style>
@@ -37,7 +36,6 @@
             font-size: 1.8rem;
         }
         
-        /* --- ESTILO PARA EL STOCK --- */
         .stock-container {
             background-color: #e8f5e9;
             border: 2px solid var(--primary-color);
@@ -80,16 +78,12 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow-x: auto;
-            /* Desplazamiento horizontal suave en dispositivos Apple/iOS */
-            -webkit-overflow-scrolling: touch; 
+            overflow: hidden; /* Evita bordes salidos */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            /* Evita que los textos largos aplasten la tabla hacia abajo en móviles */
-            white-space: nowrap; 
         }
         th, td {
             padding: 12px 15px;
@@ -99,8 +93,6 @@
             background-color: #e8f5e9;
             color: var(--primary-color);
             font-weight: 600;
-            position: sticky;
-            top: 0;
         }
         tr:hover {
             background-color: #f9f9f9;
@@ -113,29 +105,68 @@
         }
 
         /* ==================================================== */
-        /*   DISEÑO RESPONSIVO: MAGIA PARA PANTALLAS DE MÓVIL   */
+        /*  NUEVO DISEÑO DE "TARJETAS" PARA CELULARES (MOBILE)  */
         /* ==================================================== */
         @media (max-width: 768px) {
             .header {
-                flex-direction: column; /* Apila los elementos hacia abajo */
-                align-items: stretch; /* Estira los elementos al ancho total */
+                flex-direction: column;
+                align-items: stretch;
                 text-align: center;
                 gap: 12px;
             }
-            h1 {
-                font-size: 1.6rem;
-            }
-            .stock-container {
-                justify-content: center; /* Centra el texto del stock */
-                padding: 12px;
-            }
             .refresh-btn {
-                width: 100%; /* Botón grande y fácil de presionar */
-                padding: 14px;
+                width: 100%;
             }
-            th, td {
-                padding: 10px 12px; /* Reduce un poco el espacio interno para mostrar más datos */
-                font-size: 0.95rem;
+            
+            /* Quitamos el formato clásico de tabla para móviles */
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+            
+            /* Ocultamos la fila de títulos superior (no la borramos, la escondemos) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            /* Convertimos cada registro en una tarjeta separada */
+            tr {
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                background-color: #fff;
+                overflow: hidden;
+            }
+            
+            /* Estilo interno de cada celda dentro de la tarjeta */
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                display: flex;
+                justify-content: space-between; /* Texto izq y valor der */
+                align-items: flex-start;
+                padding: 12px 15px;
+                text-align: right;
+                box-sizing: border-box;
+                word-wrap: break-word; /* Para textos largos */
+            }
+            td:last-child {
+                border-bottom: 0;
+            }
+
+            /* Usamos 'data-label' (agregado en JS) para poner el título a la izquierda */
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: var(--primary-color);
+                text-align: left;
+                padding-right: 15px;
+                flex-shrink: 0;
+                max-width: 50%;
             }
         }
     </style>
@@ -143,7 +174,6 @@
 <body>
 
     <div class="header">
-        <!-- TÍTULO ACTUALIZADO -->
         <h1>Data de Combustible CVB</h1>
         
         <div class="stock-container">
@@ -228,6 +258,12 @@
                     row.c.forEach((cell, index) => {
                         if (index < headers.length && headers[index].label) {
                             let td = document.createElement('td');
+                            
+                            // ---- ESTE ES EL TRUCO PARA EL CELULAR ----
+                            // Guarda el nombre de la columna dentro de cada celda
+                            td.setAttribute('data-label', headers[index].label); 
+                            // ------------------------------------------
+
                             td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
                             tr.appendChild(td);
                         }
