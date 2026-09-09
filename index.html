@@ -13,85 +13,130 @@
     <meta name="apple-mobile-web-app-title" content="Combustible CVB">
 
     <style>
+        /* === VARIABLES DE COLOR DINÁMICAS === */
         :root {
-            --primary-color: #2E7D32;
-            --bg-color: #f4f7f6;
+            /* Tema Verde (Consumo) */
+            --consumo-color: #2E7D32;
+            --consumo-bg: #e8f5e9;
+            
+            /* Tema Azul (Ingresos) */
+            --ingreso-color: #0277BD; 
+            --ingreso-bg: #E1F5FE;
+            
+            /* Colores activos (Cambian con JavaScript) */
+            --active-color: var(--consumo-color);
+            --active-bg: var(--consumo-bg);
+            
             --text-color: #333;
+            --page-bg: #f4f7f6;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--page-bg);
             color: var(--text-color);
             margin: 0;
             padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background-color 0.3s;
         }
+
         .header {
             width: 100%;
             max-width: 1000px;
             display: flex;
-            flex-direction: column; /* Apilado vertical para integrar pestañas */
+            flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
             gap: 15px;
         }
         
-        /* Contenedor del título y el botón de recarga */
+        /* === TÍTULO MEJORADO === */
         .title-bar {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
         }
-        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brand svg {
+            width: 28px;
+            height: 28px;
+            color: var(--active-color);
+            transition: color 0.3s;
+        }
         h1 {
-            color: var(--primary-color);
+            color: #263238; /* Gris muy oscuro para el título */
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
-        /* Botón de recargar toda la página */
+        /* === BOTÓN RECARGAR PÁGINA (NUEVO DISEÑO) === */
         .reload-page-btn {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            padding: 5px;
+            background: white;
+            border: 1px solid #ddd;
+            color: #555;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .reload-page-btn:hover {
+        .reload-page-btn:hover, .reload-page-btn:active {
             transform: rotate(90deg);
+            background: #f0f0f0;
+            color: var(--active-color);
+            border-color: var(--active-color);
+        }
+        .reload-page-btn svg {
+            width: 20px;
+            height: 20px;
         }
         
+        /* === STOCK CONTAINER === */
         .stock-container {
-            background-color: #e8f5e9;
-            border: 2px solid var(--primary-color);
-            padding: 10px 20px;
-            border-radius: 8px;
+            background-color: var(--active-bg);
+            border: 2px solid var(--active-color);
+            padding: 12px 20px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             max-width: 400px;
             gap: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             box-sizing: border-box;
+            transition: all 0.3s;
         }
         .stock-title {
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--active-color);
             font-size: 1.1rem;
+            transition: color 0.3s;
         }
         .stock-value {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #1b5e20;
+            font-weight: 900;
+            font-size: 1.6rem;
+            color: #111;
         }
 
-        /* --- NUEVO DISEÑO PARA LAS PESTAÑAS (TABS) --- */
+        /* === PESTAÑAS (TABS) === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -101,39 +146,53 @@
             flex: 1;
             padding: 12px;
             background: white;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            color: #777;
+            border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .tab-btn.active {
-            background: var(--primary-color);
+        /* Tab Verde Activa */
+        #btn-registros.active {
+            background: var(--consumo-color);
+            border-color: var(--consumo-color);
             color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.3);
         }
-        /* --------------------------------------------- */
+        /* Tab Azul Activa */
+        #btn-ingresos.active {
+            background: var(--ingreso-color);
+            border-color: var(--ingreso-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(2, 119, 189, 0.3);
+        }
 
+        /* === BOTÓN ACTUALIZAR DATOS === */
         .refresh-btn {
-            background-color: var(--primary-color);
+            background-color: var(--active-color); /* Cambia de color dinámicamente */
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             width: 100%;
             max-width: 1000px;
-            transition: background 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         .refresh-btn:hover {
-            background-color: #1b5e20;
+            filter: brightness(0.9);
         }
         
+        /* === TABLAS Y DATOS === */
         .table-container {
             width: 100%;
             max-width: 1000px;
@@ -154,9 +213,10 @@
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #e8f5e9;
-            color: var(--primary-color);
-            font-weight: 600;
+            background-color: var(--active-bg);
+            color: var(--active-color);
+            font-weight: 700;
+            transition: all 0.3s;
         }
         tr:hover {
             background-color: #f9f9f9;
@@ -165,7 +225,7 @@
             padding: 20px;
             text-align: center;
             font-weight: bold;
-            color: #666;
+            color: var(--active-color);
             background: white;
             border-radius: 8px;
         }
@@ -174,40 +234,42 @@
         /*  DISEÑO PARA CELULARES (MOBILE)                      */
         /* ==================================================== */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5rem;
-            }
+            h1 { font-size: 1.25rem; }
             .stock-title { font-size: 0.95rem; }
-            .stock-value { font-size: 1.3rem; }
+            .stock-value { font-size: 1.4rem; }
             
-            /* Pestañas apiladas en celular si el texto es muy largo */
             .tabs-container {
                 flex-direction: column;
+            }
+            .refresh-btn {
+                font-size: 1rem;
+                padding: 12px;
             }
             
             table {
                 background: transparent;
                 box-shadow: none;
             }
-
             table, thead, tbody, th, td, tr {
                 display: block;
                 width: 100%;
             }
-            
             thead tr {
                 position: absolute;
                 top: -9999px;
                 left: -9999px;
             }
             
+            /* Tarjetas con un borde superior del color activo (Verde o Azul) */
             tr {
                 margin-bottom: 18px; 
                 border: 1px solid #b0bec5; 
+                border-top: 5px solid var(--active-color); /* Identidad visual en celular */
                 border-radius: 12px; 
-                box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.12); 
                 background-color: #ffffff;
                 overflow: hidden;
+                transition: border-color 0.3s;
             }
             
             td {
@@ -216,12 +278,12 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 8px 12px; 
+                padding: 10px 12px; 
                 text-align: right;
                 box-sizing: border-box;
                 word-wrap: break-word;
-                font-size: 0.85rem; 
-                color: #444; 
+                font-size: 0.9rem; 
+                color: #333; 
             }
             td:last-child {
                 border-bottom: 0;
@@ -229,14 +291,15 @@
 
             td::before {
                 content: attr(data-label);
-                font-weight: 700; 
-                color: var(--primary-color);
+                font-weight: 800; 
+                color: var(--active-color);
                 text-align: left;
                 padding-right: 10px;
                 flex-shrink: 0;
                 max-width: 45%;
                 font-size: 0.75rem; 
                 text-transform: uppercase; 
+                transition: color 0.3s;
             }
         }
     </style>
@@ -245,10 +308,25 @@
 
     <div class="header">
         
-        <!-- TÍTULO Y BOTÓN DE RECARGA DE PÁGINA -->
+        <!-- TÍTULO MEJORADO CON ÍCONO SVG -->
         <div class="title-bar">
-            <h1>Data de Combustible CVB</h1>
-            <button class="reload-page-btn" onclick="location.reload()" title="Recargar App Completa">🔄</button>
+            <div class="brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 22v-8c0-1.1.9-2 2-2h14a2 2 0 0 1 2 2v8"></path>
+                    <path d="M7 12V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8"></path>
+                    <path d="M12 7v5"></path>
+                    <path d="M22 15h2v-4.4a2 2 0 0 0-1.24-1.85L20 8"></path>
+                </svg>
+                <h1>Data CVB</h1>
+            </div>
+            
+            <!-- NUEVO BOTÓN DE RECARGA SVG -->
+            <button class="reload-page-btn" onclick="location.reload()" title="Recargar App Completa">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+            </button>
         </div>
         
         <!-- STOCK -->
@@ -257,14 +335,22 @@
             <span id="stock-value" class="stock-value">...</span>
         </div>
 
-        <!-- PESTAÑAS (TABS) PARA CAMBIAR DE HOJA -->
+        <!-- PESTAÑAS (TABS) -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
-        <!-- BOTÓN ACTUALIZAR DATOS ACTUALES -->
-        <button class="refresh-btn" onclick="cargarDatos()">Actualizar Datos</button>
+        <!-- BOTÓN ACTUALIZAR -->
+        <button class="refresh-btn" onclick="cargarDatos()">
+            <!-- Ícono de Nube -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Actualizar Datos
+        </button>
     </div>
 
     <div class="table-container">
@@ -273,7 +359,7 @@
                 <!-- Las cabeceras se cargarán aquí -->
             </thead>
             <tbody id="table-body">
-                <tr><td colspan="10" class="loading">Cargando datos desde Google Sheets...</td></tr>
+                <tr><td colspan="10" class="loading">Cargando datos...</td></tr>
             </tbody>
         </table>
     </div>
@@ -281,23 +367,31 @@
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
         const gidStock = '252157837'; 
-        
-        // GIDs de las dos hojas de datos
         const gidRegistros = '481287721';
         const gidIngresos = '690045193';
 
-        // Variable para saber qué pestaña está activa (por defecto inicia en registros)
         let pestanaActiva = 'registros';
 
-        // Función para cambiar el estilo visual y cargar la nueva tabla
+        // === MAGIA DEL CAMBIO DE COLORES (TEMAS) ===
         function cambiarPestana(pestana) {
             pestanaActiva = pestana;
             
-            // Cambiar los colores de los botones para saber cuál está seleccionado
-            document.getElementById('btn-registros').classList.toggle('active', pestana === 'registros');
-            document.getElementById('btn-ingresos').classList.toggle('active', pestana === 'ingresos');
+            const root = document.documentElement;
+
+            if (pestana === 'registros') {
+                // TEMA VERDE
+                root.style.setProperty('--active-color', 'var(--consumo-color)');
+                root.style.setProperty('--active-bg', 'var(--consumo-bg)');
+                document.getElementById('btn-registros').classList.add('active');
+                document.getElementById('btn-ingresos').classList.remove('active');
+            } else {
+                // TEMA AZUL
+                root.style.setProperty('--active-color', 'var(--ingreso-color)');
+                root.style.setProperty('--active-bg', 'var(--ingreso-bg)');
+                document.getElementById('btn-ingresos').classList.add('active');
+                document.getElementById('btn-registros').classList.remove('active');
+            }
             
-            // Cargar los datos de la hoja correspondiente
             cargarDatos();
         }
 
@@ -306,19 +400,15 @@
             const thead = document.getElementById('table-head');
             const stockValueEl = document.getElementById('stock-value');
             
-            tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos actualizados...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="loading">Sincronizando con Excel...</td></tr>';
             stockValueEl.innerText = '...';
 
             const noCache = new Date().getTime();
-            
-            // URL DEL STOCK
             const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
-
-            // ELEGIR LA URL DEPENDIENDO DE LA PESTAÑA ACTIVA
             const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
-            // 1. Cargar Stock (Siempre se carga sin importar la pestaña)
+            // Cargar Stock
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -329,11 +419,10 @@
                 let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
                 stockValueEl.innerText = stockText;
             } catch (error) {
-                console.error('Error cargando el stock:', error);
                 stockValueEl.innerText = 'Error';
             }
 
-            // 2. Cargar Registros o Ingresos
+            // Cargar Datos de la Tabla
             try {
                 const response = await fetch(urlTabla);
                 const text = await response.text();
@@ -355,7 +444,6 @@
                 });
                 thead.appendChild(trHead);
 
-                // SE MANTIENE .reverse() PARA QUE LOS ÚLTIMOS ESTÉN PRIMERO EN AMBAS TABLAS
                 const rows = data.table.rows.reverse(); 
                 
                 rows.forEach(row => {
@@ -363,7 +451,6 @@
                     row.c.forEach((cell, index) => {
                         if (index < headers.length && headers[index].label) {
                             let td = document.createElement('td');
-                            
                             td.setAttribute('data-label', headers[index].label); 
                             td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
                             tr.appendChild(td);
@@ -373,12 +460,10 @@
                 });
 
             } catch (error) {
-                console.error('Error cargando los registros:', error);
-                tbody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Error al cargar los datos.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="loading" style="color:red;">Error de conexión. Intente actualizar.</td></tr>';
             }
         }
 
-        // Cargar todo al iniciar
         window.onload = cargarDatos;
     </script>
 </body>
