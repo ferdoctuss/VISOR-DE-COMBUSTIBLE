@@ -133,7 +133,7 @@
             color: #111;
         }
 
-        /* === NUEVA CONFIGURACIÓN DE PESTAÑAS (INVERTIDA) === */
+        /* === CONFIGURACIÓN DE PESTAÑAS === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -149,7 +149,6 @@
             transition: all 0.3s;
         }
 
-        /* Estilo por defecto (Inactivo / Listo para ser presionado) */
         #btn-registros {
             background: var(--consumo-color);
             color: white;
@@ -163,7 +162,6 @@
             box-shadow: 0 4px 6px rgba(2, 119, 189, 0.2);
         }
 
-        /* Estilo cuando está presionado (Activo -> Fondo blanco) */
         #btn-registros.active {
             background: white !important;
             color: var(--consumo-color) !important;
@@ -176,11 +174,10 @@
             border: 2px solid var(--ingreso-color) !important;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
-        /* ------------------------------------------------ */
 
-        /* === BOTÓN ACTUALIZAR DATOS (FIJO EN VERDE COMO PEDISTE) === */
+        /* === BOTÓN ACTUALIZAR DATOS (TOMA EL COLOR DE LA PESTAÑA ACTIVA) === */
         .refresh-btn {
-            background-color: #2E7D32; 
+            background-color: var(--active-color); 
             color: white;
             border: none;
             padding: 14px 20px;
@@ -190,7 +187,7 @@
             font-size: 1.1rem;
             width: 100%;
             max-width: 1000px;
-            transition: all 0.3s;
+            transition: background-color 0.3s;
             box-shadow: 0 4px 6px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
@@ -198,7 +195,7 @@
             gap: 8px;
         }
         .refresh-btn:hover {
-            background-color: #1b5e20;
+            filter: brightness(0.9);
         }
         
         .table-container {
@@ -336,13 +333,12 @@
             <span id="stock-value" class="stock-value">...</span>
         </div>
 
-        <!-- PESTAÑAS (INVERTIDAS) -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
-        <!-- BOTÓN ACTUALIZAR (FIJO) -->
+        <!-- BOTÓN ACTUALIZAR (DINÁMICO SEGÚN PESTAÑA) -->
         <button class="refresh-btn" onclick="cargarDatos()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
