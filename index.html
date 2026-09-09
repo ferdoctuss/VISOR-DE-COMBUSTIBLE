@@ -53,7 +53,6 @@
             gap: 15px;
         }
         
-        /* === TÍTULO MEJORADO === */
         .title-bar {
             width: 100%;
             display: flex;
@@ -74,7 +73,7 @@
             transition: color 0.3s;
         }
         h1 {
-            color: #263238; /* Gris muy oscuro para el título */
+            color: #263238;
             margin: 0;
             font-size: 1.4rem;
             font-weight: 800;
@@ -82,7 +81,6 @@
             text-transform: uppercase;
         }
 
-        /* === BOTÓN RECARGAR PÁGINA (NUEVO DISEÑO) === */
         .reload-page-btn {
             background: white;
             border: 1px solid #ddd;
@@ -108,7 +106,6 @@
             height: 20px;
         }
         
-        /* === STOCK CONTAINER === */
         .stock-container {
             background-color: var(--active-bg);
             border: 2px solid var(--active-color);
@@ -136,7 +133,7 @@
             color: #111;
         }
 
-        /* === PESTAÑAS (TABS) === */
+        /* === NUEVA CONFIGURACIÓN DE PESTAÑAS (INVERTIDA) === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -145,33 +142,45 @@
         .tab-btn {
             flex: 1;
             padding: 12px;
-            background: white;
-            color: #777;
-            border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
         }
-        /* Tab Verde Activa */
-        #btn-registros.active {
+
+        /* Estilo por defecto (Inactivo / Listo para ser presionado) */
+        #btn-registros {
             background: var(--consumo-color);
-            border-color: var(--consumo-color);
             color: white;
-            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.3);
+            border: 2px solid var(--consumo-color);
+            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
         }
-        /* Tab Azul Activa */
-        #btn-ingresos.active {
+        #btn-ingresos {
             background: var(--ingreso-color);
-            border-color: var(--ingreso-color);
             color: white;
-            box-shadow: 0 4px 6px rgba(2, 119, 189, 0.3);
+            border: 2px solid var(--ingreso-color);
+            box-shadow: 0 4px 6px rgba(2, 119, 189, 0.2);
         }
 
-        /* === BOTÓN ACTUALIZAR DATOS === */
+        /* Estilo cuando está presionado (Activo -> Fondo blanco) */
+        #btn-registros.active {
+            background: white !important;
+            color: var(--consumo-color) !important;
+            border: 2px solid var(--consumo-color) !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #btn-ingresos.active {
+            background: white !important;
+            color: var(--ingreso-color) !important;
+            border: 2px solid var(--ingreso-color) !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* ------------------------------------------------ */
+
+        /* === BOTÓN ACTUALIZAR DATOS (FIJO EN VERDE COMO PEDISTE) === */
         .refresh-btn {
-            background-color: var(--active-color); /* Cambia de color dinámicamente */
+            background-color: #2E7D32; 
             color: white;
             border: none;
             padding: 14px 20px;
@@ -189,10 +198,9 @@
             gap: 8px;
         }
         .refresh-btn:hover {
-            filter: brightness(0.9);
+            background-color: #1b5e20;
         }
         
-        /* === TABLAS Y DATOS === */
         .table-container {
             width: 100%;
             max-width: 1000px;
@@ -230,9 +238,6 @@
             border-radius: 8px;
         }
 
-        /* ==================================================== */
-        /*  DISEÑO PARA CELULARES (MOBILE)                      */
-        /* ==================================================== */
         @media (max-width: 768px) {
             h1 { font-size: 1.25rem; }
             .stock-title { font-size: 0.95rem; }
@@ -260,11 +265,10 @@
                 left: -9999px;
             }
             
-            /* Tarjetas con un borde superior del color activo (Verde o Azul) */
             tr {
                 margin-bottom: 18px; 
                 border: 1px solid #b0bec5; 
-                border-top: 5px solid var(--active-color); /* Identidad visual en celular */
+                border-top: 5px solid var(--active-color); 
                 border-radius: 12px; 
                 box-shadow: 0 4px 8px rgba(0,0,0,0.12); 
                 background-color: #ffffff;
@@ -308,7 +312,6 @@
 
     <div class="header">
         
-        <!-- TÍTULO MEJORADO CON ÍCONO SVG -->
         <div class="title-bar">
             <div class="brand">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -320,7 +323,6 @@
                 <h1>Data CVB</h1>
             </div>
             
-            <!-- NUEVO BOTÓN DE RECARGA SVG -->
             <button class="reload-page-btn" onclick="location.reload()" title="Recargar App Completa">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="23 4 23 10 17 10"></polyline>
@@ -329,21 +331,19 @@
             </button>
         </div>
         
-        <!-- STOCK -->
         <div class="stock-container">
             <span class="stock-title">Galones en Stock:</span>
             <span id="stock-value" class="stock-value">...</span>
         </div>
 
-        <!-- PESTAÑAS (TABS) -->
+        <!-- PESTAÑAS (INVERTIDAS) -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
-        <!-- BOTÓN ACTUALIZAR -->
+        <!-- BOTÓN ACTUALIZAR (FIJO) -->
         <button class="refresh-btn" onclick="cargarDatos()">
-            <!-- Ícono de Nube -->
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
@@ -372,20 +372,17 @@
 
         let pestanaActiva = 'registros';
 
-        // === MAGIA DEL CAMBIO DE COLORES (TEMAS) ===
         function cambiarPestana(pestana) {
             pestanaActiva = pestana;
             
             const root = document.documentElement;
 
             if (pestana === 'registros') {
-                // TEMA VERDE
                 root.style.setProperty('--active-color', 'var(--consumo-color)');
                 root.style.setProperty('--active-bg', 'var(--consumo-bg)');
                 document.getElementById('btn-registros').classList.add('active');
                 document.getElementById('btn-ingresos').classList.remove('active');
             } else {
-                // TEMA AZUL
                 root.style.setProperty('--active-color', 'var(--ingreso-color)');
                 root.style.setProperty('--active-bg', 'var(--ingreso-bg)');
                 document.getElementById('btn-ingresos').classList.add('active');
@@ -408,7 +405,6 @@
             const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
-            // Cargar Stock
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -422,7 +418,6 @@
                 stockValueEl.innerText = 'Error';
             }
 
-            // Cargar Datos de la Tabla
             try {
                 const response = await fetch(urlTabla);
                 const text = await response.text();
