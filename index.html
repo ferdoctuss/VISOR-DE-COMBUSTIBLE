@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de Registros de Maquinaria</title>
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .refresh-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .refresh-btn:hover {
+            background-color: #1b5e20;
+        }
+        .table-container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #e8f5e9;
+            color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .loading {
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Visor de Registros</h1>
+        <button class="refresh-btn" onclick="cargarDatos()">Actualizar Datos</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead id="table-head">
+                <!-- Las cabeceras se cargarán aquí -->
+            </thead>
+            <tbody id="table-body">
+                <tr><td colspan="10" class="loading">Cargando datos desde Google Sheets...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Tu ID de documento y GID
+        const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
+        const gid = '481287721';
+        
+        // URL secreta de Google para exportar hojas como JSON
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+        async function cargarDatos() {
+            const tbody = document.getElementById('table-body');
+            const thead = document.getElementById('table-head');
+            tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos actualizados...</td></tr>';
+
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                
+                // Google devuelve un texto con formato de función, extraemos solo el JSON
+                const jsonString = text.substring(text.indexOf('({') + 1, text.lastIndexOf('})') + 1);
+                const data = JSON.parse(jsonString);
+
+                // Limpiar tabla
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                // 1. Crear cabeceras
+                const headers = data.table.cols;
+                let trHead = document.createElement('tr');
+                headers.forEach(header => {
+                    if(header.label) {
+                        let th = document.createElement('th');
+                        th.innerText = header.label;
+                        trHead.appendChild(th);
+                    }
+                });
+                thead.appendChild(trHead);
+
+                // 2. Crear filas
+                const rows = data.table.rows;
+                rows.forEach(row => {
+                    let tr = document.createElement('tr');
+                    row.c.forEach((cell, index) => {
+                        // Evitar columnas vacías al final si no hay cabecera
+                        if (index < headers.length && headers[index].label) {
+                            let td = document.createElement('td');
+                            // Si la celda tiene texto formateado (f) usamos ese, sino el valor crudo (v)
+                            td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
+                            tr.appendChild(td);
+                        }
+                    });
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error('Error cargando los datos:', error);
+                tbody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Error al cargar los datos. Verifica que la hoja sea pública.</td></tr>';
+            }
+        }
+
+        // Cargar los datos automáticamente al abrir la página
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>
