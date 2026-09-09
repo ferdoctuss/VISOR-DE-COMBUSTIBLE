@@ -135,8 +135,9 @@
                 });
                 thead.appendChild(trHead);
 
-                // 2. Crear filas
-                const rows = data.table.rows;
+                // 2. Crear filas (Con .reverse() para mostrar los últimos primero)
+                const rows = data.table.rows.reverse(); 
+                
                 rows.forEach(row => {
                     let tr = document.createElement('tr');
                     row.c.forEach((cell, index) => {
