@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Data de Combustible CVB</title>
+    
+    <!-- ICONOS Y CONFIGURACIÓN PARA IPHONE (PANTALLA DE INICIO) -->
+    <link rel="apple-touch-icon" href="icono.png">
+    <link rel="icon" href="icono.png" type="image/png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Combustible CVB">
+
     <style>
         :root {
             --primary-color: #2E7D32;
@@ -75,7 +83,7 @@
         .table-container {
             width: 100%;
             max-width: 1000px;
-            background: transparent; /* Transparente para que se vean bien las cajas separadas */
+            background: transparent; 
             overflow: visible;
         }
         table {
@@ -118,7 +126,6 @@
                 text-align: center;
                 gap: 12px;
             }
-            /* Reducir el tamaño de las letras en la cabecera para el celular */
             h1 {
                 font-size: 1.5rem;
             }
@@ -134,7 +141,6 @@
                 padding: 10px;
             }
             
-            /* Quitamos el fondo blanco general de la tabla para separar las tarjetas */
             table {
                 background: transparent;
                 box-shadow: none;
@@ -151,45 +157,43 @@
                 left: -9999px;
             }
             
-            /* --- DISEÑO DE LAS TARJETAS (CAJAS MÁS MARCADAS) --- */
+            /* --- DISEÑO DE LAS TARJETAS --- */
             tr {
-                margin-bottom: 18px; /* Más espacio entre tarjetas */
-                border: 1px solid #b0bec5; /* Borde ligeramente más oscuro */
-                border-radius: 12px; /* Bordes más redondeados */
-                box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra más fuerte y visible */
+                margin-bottom: 18px; 
+                border: 1px solid #b0bec5; 
+                border-radius: 12px; 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
                 background-color: #ffffff;
                 overflow: hidden;
             }
             
-            /* Estilo interno de cada celda (Letras más pequeñas) */
             td {
                 border: none;
-                border-bottom: 1px solid #f0f0f0; /* Línea separadora muy suave entre datos */
+                border-bottom: 1px solid #f0f0f0; 
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 8px 12px; /* Menos espacio interno para hacerlas más compactas */
+                padding: 8px 12px; 
                 text-align: right;
                 box-sizing: border-box;
                 word-wrap: break-word;
-                font-size: 0.85rem; /* LETRAS MÁS PEQUEÑAS PARA LOS DATOS */
-                color: #444; /* Gris un poco más oscuro para mejor lectura */
+                font-size: 0.85rem; 
+                color: #444; 
             }
             td:last-child {
                 border-bottom: 0;
             }
 
-            /* Usamos 'data-label' para los títulos a la izquierda (Letras más pequeñas) */
             td::before {
                 content: attr(data-label);
-                font-weight: 700; /* Negrita más fuerte para destacar */
+                font-weight: 700; 
                 color: var(--primary-color);
                 text-align: left;
                 padding-right: 10px;
                 flex-shrink: 0;
                 max-width: 45%;
-                font-size: 0.75rem; /* LETRAS AÚN MÁS PEQUEÑAS PARA LOS TÍTULOS VERDES */
-                text-transform: uppercase; /* Convertir a mayúsculas para un look más ordenado */
+                font-size: 0.75rem; 
+                text-transform: uppercase; 
             }
         }
     </style>
