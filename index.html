@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de Registros de Maquinaria</title>
+    <!-- El viewport ajustado previene el zoom automático al tocar botones en móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Data de Combustible CVB</title>
     <style>
         :root {
             --primary-color: #2E7D32;
@@ -15,7 +16,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,7 +28,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap; /* Permite que se acomode en celulares */
+            flex-wrap: wrap;
             gap: 15px;
         }
         h1 {
@@ -36,7 +37,7 @@
             font-size: 1.8rem;
         }
         
-        /* --- NUEVO ESTILO PARA EL STOCK --- */
+        /* --- ESTILO PARA EL STOCK --- */
         .stock-container {
             background-color: #e8f5e9;
             border: 2px solid var(--primary-color);
@@ -57,17 +58,18 @@
             font-size: 1.5rem;
             color: #1b5e20;
         }
-        /* ---------------------------------- */
 
         .refresh-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1rem;
             transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .refresh-btn:hover {
             background-color: #1b5e20;
@@ -79,11 +81,15 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             overflow-x: auto;
+            /* Desplazamiento horizontal suave en dispositivos Apple/iOS */
+            -webkit-overflow-scrolling: touch; 
         }
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
+            /* Evita que los textos largos aplasten la tabla hacia abajo en móviles */
+            white-space: nowrap; 
         }
         th, td {
             padding: 12px 15px;
@@ -105,14 +111,41 @@
             font-weight: bold;
             color: #666;
         }
+
+        /* ==================================================== */
+        /*   DISEÑO RESPONSIVO: MAGIA PARA PANTALLAS DE MÓVIL   */
+        /* ==================================================== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column; /* Apila los elementos hacia abajo */
+                align-items: stretch; /* Estira los elementos al ancho total */
+                text-align: center;
+                gap: 12px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .stock-container {
+                justify-content: center; /* Centra el texto del stock */
+                padding: 12px;
+            }
+            .refresh-btn {
+                width: 100%; /* Botón grande y fácil de presionar */
+                padding: 14px;
+            }
+            th, td {
+                padding: 10px 12px; /* Reduce un poco el espacio interno para mostrar más datos */
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Visor de Registros</h1>
+        <!-- TÍTULO ACTUALIZADO -->
+        <h1>Data de Combustible CVB</h1>
         
-        <!-- NUEVO CONTENEDOR DE STOCK -->
         <div class="stock-container">
             <span class="stock-title">Galones en Stock:</span>
             <span id="stock-value" class="stock-value">...</span>
@@ -134,12 +167,9 @@
 
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
-        
-        // GID de la tabla de registros y GID de la hoja de stock
         const gidRegistros = '481287721';
         const gidStock = '252157837'; 
         
-        // URLs para ambas consultas
         const urlRegistros = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidRegistros}`;
         const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1`;
 
@@ -151,14 +181,13 @@
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos actualizados...</td></tr>';
             stockValueEl.innerText = '...';
 
-            // 1. CARGAR EL STOCK (Hoja "TABLA")
+            // 1. CARGAR EL STOCK 
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
                 const jsonStringStock = textStock.substring(textStock.indexOf('({') + 1, textStock.lastIndexOf('})') + 1);
                 const dataStock = JSON.parse(jsonStringStock);
                 
-                // Extraer el valor de la celda A2
                 let stockCell = dataStock.table.rows[0].c[0];
                 let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
                 stockValueEl.innerText = stockText;
@@ -168,7 +197,7 @@
                 stockValueEl.innerText = 'Error';
             }
 
-            // 2. CARGAR LOS REGISTROS (Hoja normal)
+            // 2. CARGAR LOS REGISTROS 
             try {
                 const response = await fetch(urlRegistros);
                 const text = await response.text();
@@ -191,7 +220,7 @@
                 });
                 thead.appendChild(trHead);
 
-                // Crear filas (Con .reverse() para últimos primero)
+                // Crear filas 
                 const rows = data.table.rows.reverse(); 
                 
                 rows.forEach(row => {
@@ -212,7 +241,6 @@
             }
         }
 
-        // Cargar todo automáticamente al abrir
         window.onload = cargarDatos;
     </script>
 </body>
