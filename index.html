@@ -175,7 +175,7 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* === BOTÓN ACTUALIZAR DATOS (TOMA EL COLOR DE LA PESTAÑA ACTIVA) === */
+        /* === BOTÓN ACTUALIZAR DATOS === */
         .refresh-btn {
             background-color: var(--active-color); 
             color: white;
@@ -338,7 +338,6 @@
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
-        <!-- BOTÓN ACTUALIZAR (DINÁMICO SEGÚN PESTAÑA) -->
         <button class="refresh-btn" onclick="cargarDatos()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -369,6 +368,9 @@
         let pestanaActiva = 'registros';
 
         function cambiarPestana(pestana) {
+            // SI YA ESTÁ EN ESA PESTAÑA, NO HACE NADA (EVITA RECARGAS INNECESARIAS)
+            if (pestanaActiva === pestana) return;
+
             pestanaActiva = pestana;
             
             const root = document.documentElement;
