@@ -103,18 +103,18 @@
             height: 20px;
         }
         
-        /* === NUEVA CASILLA DOBLE (MÉTRICAS) === */
+        /* === PANEL TRIPLE (LOTE / RECARGADOS / STOCK) === */
         .metrics-container {
             background-color: var(--active-bg);
             border: 2px solid var(--active-color);
-            padding: 15px 20px;
+            padding: 15px 10px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            justify-content: space-around;
+            justify-content: space-between;
             width: 100%;
             max-width: 600px;
-            gap: 15px;
+            gap: 5px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             box-sizing: border-box;
             transition: all 0.3s;
@@ -128,26 +128,26 @@
         }
         .metric-divider {
             width: 2px;
-            height: 45px;
+            height: 40px;
             background-color: var(--active-color);
             opacity: 0.3;
             transition: background-color 0.3s;
         }
         .metric-title {
-            font-weight: 700;
+            font-weight: 800;
             color: var(--active-color);
-            font-size: 0.85rem;
+            font-size: 0.80rem;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             transition: color 0.3s;
         }
         .metric-value {
             font-weight: 900;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: #111;
         }
 
-        /* === CONFIGURACIÓN DE PESTAÑAS (SOLO 2) === */
+        /* === CONFIGURACIÓN DE PESTAÑAS (2) === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -252,13 +252,14 @@
         @media (max-width: 768px) {
             h1 { font-size: 1.25rem; }
             
-            /* Ajustes de la casilla de métricas en celular para que entre bien */
+            /* Ajustes finos para que los 3 bloques entren perfecto en el celular */
             .metrics-container {
-                padding: 12px 10px;
+                padding: 12px 5px;
                 gap: 5px;
             }
-            .metric-title { font-size: 0.70rem; }
-            .metric-value { font-size: 1.3rem; }
+            .metric-title { font-size: 0.65rem; }
+            .metric-value { font-size: 1.15rem; }
+            .metric-divider { height: 35px; }
             
             .tabs-container {
                 flex-direction: column;
@@ -348,26 +349,33 @@
             </button>
         </div>
         
-        <!-- NUEVO CONTENEDOR DOBLE DE MÉTRICAS -->
+        <!-- PANEL DE MÉTRICAS (LOTE / RECARGADOS / STOCK) -->
         <div class="metrics-container">
-            <!-- Métrica 1: Stock -->
+            
+            <!-- 1: LOTE -->
             <div class="metric-block">
-                <span class="metric-title">Galones en Stock</span>
+                <span class="metric-title">Lote</span>
+                <span id="lote-value" class="metric-value">...</span>
+            </div>
+            
+            <div class="metric-divider"></div>
+            
+            <!-- 2: RECARGADOS -->
+            <div class="metric-block">
+                <span class="metric-title">Recargados</span>
+                <span id="recargados-value" class="metric-value">...</span>
+            </div>
+
+            <div class="metric-divider"></div>
+            
+            <!-- 3: STOCK -->
+            <div class="metric-block">
+                <span class="metric-title">Stock</span>
                 <span id="stock-value" class="metric-value">...</span>
             </div>
             
-            <!-- Separador Visual -->
-            <div class="metric-divider"></div>
-            
-            <!-- Métrica 2: Tu nuevo dato -->
-            <div class="metric-block">
-                <!-- Se llenará automáticamente con el título de la columna en Excel -->
-                <span id="extra-title" class="metric-title">Cargando...</span>
-                <span id="extra-value" class="metric-value">...</span>
-            </div>
         </div>
 
-        <!-- PESTAÑAS ORIGINALES (2) -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
@@ -396,11 +404,12 @@
 
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
-        const gidStock = '252157837'; 
-        const gidExtra = '1813245410'; // <- AQUÍ ESTÁ EL GID DE TU NUEVA HOJA
-
-        const gidRegistros = '481287721';
-        const gidIngresos = '690045193';
+        
+        // GIDs DE TUS 3 HOJAS
+        const gidStock = '252157837';      // Stock total (Columna A)
+        const gidExtra = '1813245410';     // Lote (A) y Recargados (B)
+        const gidRegistros = '481287721';  // Tabla de consumos
+        const gidIngresos = '690045193';   // Tabla de ingresos
 
         let pestanaActiva = 'registros';
 
@@ -428,24 +437,27 @@
         async function cargarDatos() {
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
+            
+            // Textos de Métricas
             const stockValueEl = document.getElementById('stock-value');
-            const extraTitleEl = document.getElementById('extra-title');
-            const extraValueEl = document.getElementById('extra-value');
+            const loteValueEl = document.getElementById('lote-value');
+            const recargadosValueEl = document.getElementById('recargados-value');
             
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Sincronizando con Excel...</td></tr>';
             stockValueEl.innerText = '...';
-            extraValueEl.innerText = '...';
+            loteValueEl.innerText = '...';
+            recargadosValueEl.innerText = '...';
 
             const noCache = new Date().getTime();
             
-            // URLs para las consultas
+            // URLs: El de Lote/Recargados lee las columnas A y B (range=A1:B2)
             const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
-            const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:A2&headers=1&_=${noCache}`;
+            const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:B2&headers=1&_=${noCache}`;
             
             const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
-            // 1. CARGAR STOCK (Lado Izquierdo)
+            // 1. CARGAR STOCK (Desde la hoja de stock)
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -459,23 +471,28 @@
                 stockValueEl.innerText = 'Error';
             }
 
-            // 2. CARGAR DATO EXTRA (Lado Derecho)
+            // 2. CARGAR LOTE Y RECARGADOS (Desde la nueva hoja)
             try {
                 const responseExtra = await fetch(urlExtra);
                 const textExtra = await responseExtra.text();
                 const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
                 const dataExtra = JSON.parse(jsonStringExtra);
                 
-                // Extrae automáticamente el nombre que le pusiste a la columna A1 en Excel
-                let tituloColumna = (dataExtra.table.cols[0] && dataExtra.table.cols[0].label) ? dataExtra.table.cols[0].label : 'Nuevo Dato';
-                extraTitleEl.innerText = tituloColumna;
+                let columnasData = dataExtra.table.rows[0].c;
 
-                let extraCell = dataExtra.table.rows[0].c[0];
-                let extraText = (extraCell && extraCell.f) ? extraCell.f : (extraCell && extraCell.v ? extraCell.v : '0');
-                extraValueEl.innerText = extraText;
+                // Columna A (Lote)
+                let loteCell = columnasData[0];
+                let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
+                loteValueEl.innerText = loteText;
+
+                // Columna B (Recargados) - Validamos por si está vacía
+                let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
+                let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
+                recargadosValueEl.innerText = recargadosText;
+
             } catch (error) {
-                extraTitleEl.innerText = 'Dato';
-                extraValueEl.innerText = 'Error';
+                loteValueEl.innerText = 'Error';
+                recargadosValueEl.innerText = 'Error';
             }
 
             // 3. CARGAR TABLA PRINCIPAL
