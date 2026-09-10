@@ -15,19 +15,12 @@
     <style>
         /* === VARIABLES DE COLOR DINÁMICAS === */
         :root {
-            /* Tema Verde (Consumo) */
             --consumo-color: #2E7D32;
             --consumo-bg: #e8f5e9;
             
-            /* Tema Azul (Ingresos) */
             --ingreso-color: #0277BD; 
             --ingreso-bg: #E1F5FE;
-
-            /* Tema Naranja (Tercera Hoja) */
-            --tercero-color: #E65100;
-            --tercero-bg: #FFF3E0;
             
-            /* Colores activos (Cambian con JavaScript) */
             --active-color: var(--consumo-color);
             --active-bg: var(--consumo-bg);
             
@@ -110,34 +103,51 @@
             height: 20px;
         }
         
-        .stock-container {
+        /* === NUEVA CASILLA DOBLE (MÉTRICAS) === */
+        .metrics-container {
             background-color: var(--active-bg);
             border: 2px solid var(--active-color);
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 15px 20px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-around;
             width: 100%;
-            max-width: 400px;
-            gap: 10px;
+            max-width: 600px;
+            gap: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             box-sizing: border-box;
             transition: all 0.3s;
         }
-        .stock-title {
-            font-weight: 600;
+        .metric-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+        .metric-divider {
+            width: 2px;
+            height: 45px;
+            background-color: var(--active-color);
+            opacity: 0.3;
+            transition: background-color 0.3s;
+        }
+        .metric-title {
+            font-weight: 700;
             color: var(--active-color);
-            font-size: 1.1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 4px;
             transition: color 0.3s;
         }
-        .stock-value {
+        .metric-value {
             font-weight: 900;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             color: #111;
         }
 
-        /* === CONFIGURACIÓN DE LAS 3 PESTAÑAS === */
+        /* === CONFIGURACIÓN DE PESTAÑAS (SOLO 2) === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -145,13 +155,12 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
         }
 
         #btn-registros {
@@ -166,14 +175,7 @@
             border: 2px solid var(--ingreso-color);
             box-shadow: 0 4px 6px rgba(2, 119, 189, 0.2);
         }
-        #btn-tercero {
-            background: var(--tercero-color);
-            color: white;
-            border: 2px solid var(--tercero-color);
-            box-shadow: 0 4px 6px rgba(230, 81, 0, 0.2);
-        }
 
-        /* Estados Activos (Fondo Blanco) */
         #btn-registros.active {
             background: white !important;
             color: var(--consumo-color) !important;
@@ -184,12 +186,6 @@
             background: white !important;
             color: var(--ingreso-color) !important;
             border: 2px solid var(--ingreso-color) !important;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-        #btn-tercero.active {
-            background: white !important;
-            color: var(--tercero-color) !important;
-            border: 2px solid var(--tercero-color) !important;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
@@ -255,8 +251,14 @@
 
         @media (max-width: 768px) {
             h1 { font-size: 1.25rem; }
-            .stock-title { font-size: 0.95rem; }
-            .stock-value { font-size: 1.4rem; }
+            
+            /* Ajustes de la casilla de métricas en celular para que entre bien */
+            .metrics-container {
+                padding: 12px 10px;
+                gap: 5px;
+            }
+            .metric-title { font-size: 0.70rem; }
+            .metric-value { font-size: 1.3rem; }
             
             .tabs-container {
                 flex-direction: column;
@@ -346,16 +348,29 @@
             </button>
         </div>
         
-        <div class="stock-container">
-            <span class="stock-title">Galones en Stock:</span>
-            <span id="stock-value" class="stock-value">...</span>
+        <!-- NUEVO CONTENEDOR DOBLE DE MÉTRICAS -->
+        <div class="metrics-container">
+            <!-- Métrica 1: Stock -->
+            <div class="metric-block">
+                <span class="metric-title">Galones en Stock</span>
+                <span id="stock-value" class="metric-value">...</span>
+            </div>
+            
+            <!-- Separador Visual -->
+            <div class="metric-divider"></div>
+            
+            <!-- Métrica 2: Tu nuevo dato -->
+            <div class="metric-block">
+                <!-- Se llenará automáticamente con el título de la columna en Excel -->
+                <span id="extra-title" class="metric-title">Cargando...</span>
+                <span id="extra-value" class="metric-value">...</span>
+            </div>
         </div>
 
-        <!-- 3 PESTAÑAS DISPONIBLES -->
+        <!-- PESTAÑAS ORIGINALES (2) -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
-            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos Combustible</button>
-            <button id="btn-tercero" class="tab-btn" onclick="cambiarPestana('tercero')">Nueva Hoja</button>
+            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
         <button class="refresh-btn" onclick="cargarDatos()">
@@ -382,42 +397,29 @@
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
         const gidStock = '252157837'; 
-        
-        // GIDs DE LAS 3 HOJAS
+        const gidExtra = '1813245410'; // <- AQUÍ ESTÁ EL GID DE TU NUEVA HOJA
+
         const gidRegistros = '481287721';
         const gidIngresos = '690045193';
-        const gidTercero = '1813245410';
 
         let pestanaActiva = 'registros';
 
         function cambiarPestana(pestana) {
-            // Evita recargar si tocas la misma pestaña
             if (pestanaActiva === pestana) return;
 
             pestanaActiva = pestana;
-            
             const root = document.documentElement;
 
-            // Limpiar todas las clases "active"
-            document.getElementById('btn-registros').classList.remove('active');
-            document.getElementById('btn-ingresos').classList.remove('active');
-            document.getElementById('btn-tercero').classList.remove('active');
-
-            // Asignar colores y clase según la selección
             if (pestana === 'registros') {
                 root.style.setProperty('--active-color', 'var(--consumo-color)');
                 root.style.setProperty('--active-bg', 'var(--consumo-bg)');
                 document.getElementById('btn-registros').classList.add('active');
-                
-            } else if (pestana === 'ingresos') {
+                document.getElementById('btn-ingresos').classList.remove('active');
+            } else {
                 root.style.setProperty('--active-color', 'var(--ingreso-color)');
                 root.style.setProperty('--active-bg', 'var(--ingreso-bg)');
                 document.getElementById('btn-ingresos').classList.add('active');
-                
-            } else if (pestana === 'tercero') {
-                root.style.setProperty('--active-color', 'var(--tercero-color)');
-                root.style.setProperty('--active-bg', 'var(--tercero-bg)');
-                document.getElementById('btn-tercero').classList.add('active');
+                document.getElementById('btn-registros').classList.remove('active');
             }
             
             cargarDatos();
@@ -427,20 +429,23 @@
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
             const stockValueEl = document.getElementById('stock-value');
+            const extraTitleEl = document.getElementById('extra-title');
+            const extraValueEl = document.getElementById('extra-value');
             
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Sincronizando con Excel...</td></tr>';
             stockValueEl.innerText = '...';
+            extraValueEl.innerText = '...';
 
             const noCache = new Date().getTime();
+            
+            // URLs para las consultas
             const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
+            const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:A2&headers=1&_=${noCache}`;
             
-            // Selección dinámica del GID correcto según la pestaña
-            let gidActual = gidRegistros;
-            if (pestanaActiva === 'ingresos') gidActual = gidIngresos;
-            if (pestanaActiva === 'tercero') gidActual = gidTercero;
-            
+            const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
+            // 1. CARGAR STOCK (Lado Izquierdo)
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -454,6 +459,26 @@
                 stockValueEl.innerText = 'Error';
             }
 
+            // 2. CARGAR DATO EXTRA (Lado Derecho)
+            try {
+                const responseExtra = await fetch(urlExtra);
+                const textExtra = await responseExtra.text();
+                const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
+                const dataExtra = JSON.parse(jsonStringExtra);
+                
+                // Extrae automáticamente el nombre que le pusiste a la columna A1 en Excel
+                let tituloColumna = (dataExtra.table.cols[0] && dataExtra.table.cols[0].label) ? dataExtra.table.cols[0].label : 'Nuevo Dato';
+                extraTitleEl.innerText = tituloColumna;
+
+                let extraCell = dataExtra.table.rows[0].c[0];
+                let extraText = (extraCell && extraCell.f) ? extraCell.f : (extraCell && extraCell.v ? extraCell.v : '0');
+                extraValueEl.innerText = extraText;
+            } catch (error) {
+                extraTitleEl.innerText = 'Dato';
+                extraValueEl.innerText = 'Error';
+            }
+
+            // 3. CARGAR TABLA PRINCIPAL
             try {
                 const response = await fetch(urlTabla);
                 const text = await response.text();
