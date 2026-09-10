@@ -103,7 +103,7 @@
             height: 20px;
         }
         
-        /* === PANEL TRIPLE (LOTE / RECARGADOS / STOCK) === */
+        /* === PANEL DE MÉTRICAS === */
         .metrics-container {
             background-color: var(--active-bg);
             border: 2px solid var(--active-color);
@@ -189,6 +189,46 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
+        /* === NUEVA BARRA DE BÚSQUEDA === */
+        .search-container {
+            width: 100%;
+            position: relative;
+            margin-top: 5px;
+            transition: all 0.3s;
+        }
+        .search-input {
+            width: 100%;
+            padding: 14px 15px 14px 45px; /* Espacio extra a la izquierda para la lupa */
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s;
+            color: #333;
+            background-color: white;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .search-input:focus {
+            border-color: var(--active-color);
+            box-shadow: 0 0 0 4px var(--active-bg);
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #999;
+            transition: color 0.3s;
+            pointer-events: none;
+        }
+        .search-container:focus-within .search-icon {
+            color: var(--active-color);
+        }
+
         /* === BOTÓN ACTUALIZAR DATOS === */
         .refresh-btn {
             background-color: var(--active-color); 
@@ -252,7 +292,6 @@
         @media (max-width: 768px) {
             h1 { font-size: 1.25rem; }
             
-            /* Ajustes finos para que los 3 bloques entren perfecto en el celular */
             .metrics-container {
                 padding: 12px 5px;
                 gap: 5px;
@@ -264,6 +303,12 @@
             .tabs-container {
                 flex-direction: column;
             }
+            
+            .search-input {
+                font-size: 0.95rem;
+                padding: 12px 15px 12px 42px;
+            }
+
             .refresh-btn {
                 font-size: 1rem;
                 padding: 12px;
@@ -349,36 +394,36 @@
             </button>
         </div>
         
-        <!-- PANEL DE MÉTRICAS (LOTE / RECARGADOS / STOCK) -->
+        <!-- PANEL DE MÉTRICAS -->
         <div class="metrics-container">
-            
-            <!-- 1: LOTE -->
             <div class="metric-block">
                 <span class="metric-title">Lote</span>
                 <span id="lote-value" class="metric-value">...</span>
             </div>
-            
             <div class="metric-divider"></div>
-            
-            <!-- 2: RECARGADOS -->
             <div class="metric-block">
                 <span class="metric-title">Recargados</span>
                 <span id="recargados-value" class="metric-value">...</span>
             </div>
-
             <div class="metric-divider"></div>
-            
-            <!-- 3: STOCK -->
             <div class="metric-block">
                 <span class="metric-title">Stock</span>
                 <span id="stock-value" class="metric-value">...</span>
             </div>
-            
         </div>
 
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA -->
+        <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar unidad, placa, nombre, operador...">
         </div>
 
         <button class="refresh-btn" onclick="cargarDatos()">
@@ -405,11 +450,10 @@
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
         
-        // GIDs DE TUS 3 HOJAS
-        const gidStock = '252157837';      // Stock total (Columna A)
-        const gidExtra = '1813245410';     // Lote (A) y Recargados (B)
-        const gidRegistros = '481287721';  // Tabla de consumos
-        const gidIngresos = '690045193';   // Tabla de ingresos
+        const gidStock = '252157837';      
+        const gidExtra = '1813245410';     
+        const gidRegistros = '481287721';  
+        const gidIngresos = '690045193';   
 
         let pestanaActiva = 'registros';
 
@@ -434,11 +478,35 @@
             cargarDatos();
         }
 
+        // === FUNCIÓN DE BÚSQUEDA ===
+        function filtrarTabla() {
+            const input = document.getElementById('searchInput');
+            const filtro = input.value.toLowerCase();
+            const tabla = document.getElementById('table-body');
+            const filas = tabla.getElementsByTagName('tr');
+
+            for (let i = 0; i < filas.length; i++) {
+                // Ignorar la fila de "Cargando..."
+                if (filas[i].querySelector('.loading')) continue;
+                
+                // Obtener todo el texto de la fila completa
+                let textoFila = filas[i].textContent || filas[i].innerText;
+                
+                // Si el texto escrito en la barra existe dentro de la fila, se muestra
+                if (textoFila.toLowerCase().indexOf(filro) > -1) {
+                    filas[i].style.display = "";
+                } else {
+                    // Si no coincide, se oculta
+                    filas[i].style.display = "none";
+                }
+            }
+        }
+
         async function cargarDatos() {
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
+            const inputBusqueda = document.getElementById('searchInput');
             
-            // Textos de Métricas
             const stockValueEl = document.getElementById('stock-value');
             const loteValueEl = document.getElementById('lote-value');
             const recargadosValueEl = document.getElementById('recargados-value');
@@ -447,17 +515,17 @@
             stockValueEl.innerText = '...';
             loteValueEl.innerText = '...';
             recargadosValueEl.innerText = '...';
+            
+            // Limpiar la barra de búsqueda cada vez que se actualiza
+            inputBusqueda.value = "";
 
             const noCache = new Date().getTime();
             
-            // URLs: El de Lote/Recargados lee las columnas A y B (range=A1:B2)
             const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
             const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:B2&headers=1&_=${noCache}`;
-            
             const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
-            // 1. CARGAR STOCK (Desde la hoja de stock)
             try {
                 const responseStock = await fetch(urlStock);
                 const textStock = await responseStock.text();
@@ -471,7 +539,6 @@
                 stockValueEl.innerText = 'Error';
             }
 
-            // 2. CARGAR LOTE Y RECARGADOS (Desde la nueva hoja)
             try {
                 const responseExtra = await fetch(urlExtra);
                 const textExtra = await responseExtra.text();
@@ -479,23 +546,18 @@
                 const dataExtra = JSON.parse(jsonStringExtra);
                 
                 let columnasData = dataExtra.table.rows[0].c;
-
-                // Columna A (Lote)
                 let loteCell = columnasData[0];
                 let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
                 loteValueEl.innerText = loteText;
 
-                // Columna B (Recargados) - Validamos por si está vacía
                 let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
                 let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
                 recargadosValueEl.innerText = recargadosText;
-
             } catch (error) {
                 loteValueEl.innerText = 'Error';
                 recargadosValueEl.innerText = 'Error';
             }
 
-            // 3. CARGAR TABLA PRINCIPAL
             try {
                 const response = await fetch(urlTabla);
                 const text = await response.text();
