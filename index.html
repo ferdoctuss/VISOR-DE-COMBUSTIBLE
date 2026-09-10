@@ -22,6 +22,10 @@
             /* Tema Azul (Ingresos) */
             --ingreso-color: #0277BD; 
             --ingreso-bg: #E1F5FE;
+
+            /* Tema Naranja (Tercera Hoja) */
+            --tercero-color: #E65100;
+            --tercero-bg: #FFF3E0;
             
             /* Colores activos (Cambian con JavaScript) */
             --active-color: var(--consumo-color);
@@ -133,7 +137,7 @@
             color: #111;
         }
 
-        /* === CONFIGURACIÓN DE PESTAÑAS === */
+        /* === CONFIGURACIÓN DE LAS 3 PESTAÑAS === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -141,12 +145,13 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            text-align: center;
         }
 
         #btn-registros {
@@ -161,7 +166,14 @@
             border: 2px solid var(--ingreso-color);
             box-shadow: 0 4px 6px rgba(2, 119, 189, 0.2);
         }
+        #btn-tercero {
+            background: var(--tercero-color);
+            color: white;
+            border: 2px solid var(--tercero-color);
+            box-shadow: 0 4px 6px rgba(230, 81, 0, 0.2);
+        }
 
+        /* Estados Activos (Fondo Blanco) */
         #btn-registros.active {
             background: white !important;
             color: var(--consumo-color) !important;
@@ -172,6 +184,12 @@
             background: white !important;
             color: var(--ingreso-color) !important;
             border: 2px solid var(--ingreso-color) !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #btn-tercero.active {
+            background: white !important;
+            color: var(--tercero-color) !important;
+            border: 2px solid var(--tercero-color) !important;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
@@ -317,7 +335,7 @@
                     <path d="M12 7v5"></path>
                     <path d="M22 15h2v-4.4a2 2 0 0 0-1.24-1.85L20 8"></path>
                 </svg>
-                <h1>Combustible CVB</h1>
+                <h1>Data CVB</h1>
             </div>
             
             <button class="reload-page-btn" onclick="location.reload()" title="Recargar App Completa">
@@ -333,9 +351,11 @@
             <span id="stock-value" class="stock-value">...</span>
         </div>
 
+        <!-- 3 PESTAÑAS DISPONIBLES -->
         <div class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
-            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
+            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos Combustible</button>
+            <button id="btn-tercero" class="tab-btn" onclick="cambiarPestana('tercero')">Nueva Hoja</button>
         </div>
 
         <button class="refresh-btn" onclick="cargarDatos()">
@@ -362,29 +382,42 @@
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
         const gidStock = '252157837'; 
+        
+        // GIDs DE LAS 3 HOJAS
         const gidRegistros = '481287721';
         const gidIngresos = '690045193';
+        const gidTercero = '1813245410';
 
         let pestanaActiva = 'registros';
 
         function cambiarPestana(pestana) {
-            // SI YA ESTÁ EN ESA PESTAÑA, NO HACE NADA (EVITA RECARGAS INNECESARIAS)
+            // Evita recargar si tocas la misma pestaña
             if (pestanaActiva === pestana) return;
 
             pestanaActiva = pestana;
             
             const root = document.documentElement;
 
+            // Limpiar todas las clases "active"
+            document.getElementById('btn-registros').classList.remove('active');
+            document.getElementById('btn-ingresos').classList.remove('active');
+            document.getElementById('btn-tercero').classList.remove('active');
+
+            // Asignar colores y clase según la selección
             if (pestana === 'registros') {
                 root.style.setProperty('--active-color', 'var(--consumo-color)');
                 root.style.setProperty('--active-bg', 'var(--consumo-bg)');
                 document.getElementById('btn-registros').classList.add('active');
-                document.getElementById('btn-ingresos').classList.remove('active');
-            } else {
+                
+            } else if (pestana === 'ingresos') {
                 root.style.setProperty('--active-color', 'var(--ingreso-color)');
                 root.style.setProperty('--active-bg', 'var(--ingreso-bg)');
                 document.getElementById('btn-ingresos').classList.add('active');
-                document.getElementById('btn-registros').classList.remove('active');
+                
+            } else if (pestana === 'tercero') {
+                root.style.setProperty('--active-color', 'var(--tercero-color)');
+                root.style.setProperty('--active-bg', 'var(--tercero-bg)');
+                document.getElementById('btn-tercero').classList.add('active');
             }
             
             cargarDatos();
@@ -400,7 +433,12 @@
 
             const noCache = new Date().getTime();
             const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
-            const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
+            
+            // Selección dinámica del GID correcto según la pestaña
+            let gidActual = gidRegistros;
+            if (pestanaActiva === 'ingresos') gidActual = gidIngresos;
+            if (pestanaActiva === 'tercero') gidActual = gidTercero;
+            
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
             try {
