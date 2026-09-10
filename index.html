@@ -189,7 +189,7 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* === NUEVA BARRA DE BÚSQUEDA === */
+        /* === BARRA DE BÚSQUEDA === */
         .search-container {
             width: 100%;
             position: relative;
@@ -198,7 +198,7 @@
         }
         .search-input {
             width: 100%;
-            padding: 14px 15px 14px 45px; /* Espacio extra a la izquierda para la lupa */
+            padding: 14px 15px 14px 45px; 
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
@@ -478,7 +478,7 @@
             cargarDatos();
         }
 
-        // === FUNCIÓN DE BÚSQUEDA ===
+        // === FUNCIÓN DE BÚSQUEDA CORREGIDA ===
         function filtrarTabla() {
             const input = document.getElementById('searchInput');
             const filtro = input.value.toLowerCase();
@@ -486,17 +486,14 @@
             const filas = tabla.getElementsByTagName('tr');
 
             for (let i = 0; i < filas.length; i++) {
-                // Ignorar la fila de "Cargando..."
                 if (filas[i].querySelector('.loading')) continue;
                 
-                // Obtener todo el texto de la fila completa
                 let textoFila = filas[i].textContent || filas[i].innerText;
                 
-                // Si el texto escrito en la barra existe dentro de la fila, se muestra
-                if (textoFila.toLowerCase().indexOf(filro) > -1) {
+                // Aquí estaba el error tipográfico: ahora es "filtro"
+                if (textoFila.toLowerCase().indexOf(filtro) > -1) {
                     filas[i].style.display = "";
                 } else {
-                    // Si no coincide, se oculta
                     filas[i].style.display = "none";
                 }
             }
@@ -516,7 +513,6 @@
             loteValueEl.innerText = '...';
             recargadosValueEl.innerText = '...';
             
-            // Limpiar la barra de búsqueda cada vez que se actualiza
             inputBusqueda.value = "";
 
             const noCache = new Date().getTime();
