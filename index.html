@@ -63,7 +63,6 @@
             align-items: center;
             gap: 8px;
         }
-        /* Estilo para tu nuevo logo (icono4.png) */
         .brand img {
             width: 32px;
             height: 32px;
@@ -78,14 +77,12 @@
             text-transform: uppercase;
         }
 
-        /* Contenedor para alinear los botones superiores (Llamada + Recarga) */
         .header-actions {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Botones superiores circulares */
         .action-btn {
             background: white;
             border: 1px solid #ddd;
@@ -110,7 +107,6 @@
             width: 20px;
             height: 20px;
         }
-        /* Efecto específico al botón de recarga */
         .action-btn.reload-btn:hover, .action-btn.reload-btn:active {
             transform: rotate(90deg);
         }
@@ -210,7 +206,8 @@
         }
         .search-input {
             width: 100%;
-            padding: 14px 15px 14px 45px; 
+            /* Agregamos espacio a la derecha (45px) para que el texto no se oculte tras la X */
+            padding: 14px 45px 14px 45px; 
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
@@ -238,6 +235,25 @@
             pointer-events: none;
         }
         .search-container:focus-within .search-icon {
+            color: var(--active-color);
+        }
+        
+        /* === ÍCONO DE BORRAR (X) === */
+        .clear-search {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #999;
+            cursor: pointer;
+            display: none; /* Oculto por defecto hasta que escribas algo */
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+        }
+        .clear-search:hover {
             color: var(--active-color);
         }
 
@@ -318,7 +334,8 @@
             
             .search-input {
                 font-size: 0.95rem;
-                padding: 12px 15px 12px 42px;
+                /* Espacio ajustado para los íconos de los lados en el celular */
+                padding: 12px 42px 12px 42px; 
             }
 
             .refresh-btn {
@@ -357,7 +374,6 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                /* === REDUCCIÓN DE ESPACIOS ENTRE LÍNEAS AQUÍ === */
                 padding: 6px 12px; 
                 text-align: right;
                 box-sizing: border-box;
@@ -436,13 +452,19 @@
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
 
-        <!-- BARRA DE BÚSQUEDA -->
+        <!-- BARRA DE BÚSQUEDA CON BOTÓN DE "X" -->
         <div class="search-container">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
             <input type="text" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar unidad, placa, nombre, operador...">
+            
+            <!-- Icono de X para limpiar -->
+            <svg class="clear-search" id="clearSearchBtn" onclick="limpiarBusqueda()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
         </div>
 
         <button class="refresh-btn" onclick="cargarDatos()">
@@ -497,12 +519,28 @@
             cargarDatos();
         }
 
-        // === FUNCIÓN DE BÚSQUEDA ===
+        // === NUEVA FUNCIÓN PARA LIMPIAR LA BÚSQUEDA ===
+        function limpiarBusqueda() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            filtrarTabla(); // Re-ejecuta el filtro (mostrará todo)
+            input.focus();  // Regresa el cursor a la barra
+        }
+
+        // === FUNCIÓN DE BÚSQUEDA ACTUALIZADA ===
         function filtrarTabla() {
             const input = document.getElementById('searchInput');
             const filtro = input.value.toLowerCase();
             const tabla = document.getElementById('table-body');
             const filas = tabla.getElementsByTagName('tr');
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            // Mostrar u ocultar la 'X' dependiendo si hay texto escrito
+            if (filtro.length > 0) {
+                clearBtn.style.display = 'flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
 
             for (let i = 0; i < filas.length; i++) {
                 if (filas[i].querySelector('.loading')) continue;
@@ -521,6 +559,7 @@
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
             const inputBusqueda = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearchBtn');
             
             const stockValueEl = document.getElementById('stock-value');
             const loteValueEl = document.getElementById('lote-value');
@@ -531,7 +570,9 @@
             loteValueEl.innerText = '...';
             recargadosValueEl.innerText = '...';
             
+            // Limpiar búsqueda al cargar nuevos datos
             inputBusqueda.value = "";
+            clearBtn.style.display = 'none';
 
             const noCache = new Date().getTime();
             
