@@ -3,29 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Data de Combustible CVB</title>
+    <title>Centro Médico Integral Santa Celia</title>
     
-    <!-- ICONOS Y CONFIGURACIÓN PARA IPHONE -->
-    <link rel="apple-touch-icon" href="icono.png">
-    <link rel="icon" href="icono.png" type="image/png">
+    <!-- CONFIGURACIÓN PARA IPHONE -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Combustible CVB">
+    <meta name="apple-mobile-web-app-title" content="Santa Celia">
 
     <style>
-        /* === VARIABLES DE COLOR DINÁMICAS === */
         :root {
-            --consumo-color: #2E7D32;
-            --consumo-bg: #e8f5e9;
-            
-            --ingreso-color: #0277BD; 
-            --ingreso-bg: #E1F5FE;
-            
-            --active-color: var(--consumo-color);
-            --active-bg: var(--consumo-bg);
-            
+            --primary-color: #0077b6;
+            --primary-bg: #e1f5fe;
             --text-color: #333;
             --page-bg: #f4f7f6;
+            --border-color: #ced4da;
+            --readonly-bg: #e9ecef;
         }
 
         body {
@@ -37,191 +29,182 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: background-color 0.3s;
         }
 
-        .header {
+        .container {
             width: 100%;
             max-width: 1000px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .header-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* Vistas / Pantallas */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Pantalla de Inicio (Home) */
+        .home-menu {
             display: flex;
             flex-direction: column;
+            gap: 20px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .menu-btn {
+            width: 80%;
+            max-width: 400px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .menu-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-agendar { background-color: #2b9348; }
+        .btn-ver { background-color: var(--primary-color); }
+        .btn-volver { background-color: #6c757d; width: auto; padding: 8px 15px; font-size: 14px; margin-bottom: 15px; }
+
+        /* Estilos del Formulario */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        
-        .title-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
+
+        .form-group {
+            margin-bottom: 15px;
         }
-        .brand {
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #fff;
+        }
+
+        input:read-only, select:disabled {
+            background-color: var(--readonly-bg);
+            color: #495057;
+            cursor: not-allowed;
+        }
+
+        .service-container {
             display: flex;
-            align-items: center;
             gap: 8px;
         }
-        .brand img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-        }
-        h1 {
-            color: #263238;
-            margin: 0;
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .action-btn {
-            background: white;
-            border: 1px solid #ddd;
-            color: #555;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .action-btn:hover, .action-btn:active {
-            background: #f0f0f0;
-            color: var(--active-color);
-            border-color: var(--active-color);
-        }
-        .action-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-        .action-btn.reload-btn:hover, .action-btn.reload-btn:active {
-            transform: rotate(90deg);
-        }
-        
-        /* === PANEL DE MÉTRICAS === */
-        .metrics-container {
-            background-color: var(--active-bg);
-            border: 2px solid var(--active-color);
-            padding: 15px 10px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 600px;
-            gap: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-            transition: all 0.3s;
-        }
-        .metric-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            flex: 1;
-        }
-        .metric-divider {
-            width: 2px;
-            height: 40px;
-            background-color: var(--active-color);
-            opacity: 0.3;
-            transition: background-color 0.3s;
-        }
-        .metric-title {
-            font-weight: 800;
-            color: var(--active-color);
-            font-size: 0.80rem;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            transition: color 0.3s;
-        }
-        .metric-value {
-            font-weight: 900;
-            font-size: 1.4rem;
-            color: #111;
+            font-weight: 600;
+            transition: background 0.2s;
+            white-space: nowrap;
         }
 
-        /* === CONFIGURACIÓN DE PESTAÑAS (2) === */
-        .tabs-container {
-            display: flex;
-            width: 100%;
+        .search-btn:hover {
+            background-color: #005f73;
+        }
+
+        .service-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
             gap: 10px;
         }
-        .tab-btn {
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button.action-btn {
             flex: 1;
             padding: 12px;
-            border-radius: 8px;
-            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: opacity 0.2s;
+            background-color: #2b9348;
+            color: white;
         }
 
-        #btn-registros {
-            background: var(--consumo-color);
-            color: white;
-            border: 2px solid var(--consumo-color);
-            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
-        }
-        #btn-ingresos {
-            background: var(--ingreso-color);
-            color: white;
-            border: 2px solid var(--ingreso-color);
-            box-shadow: 0 4px 6px rgba(2, 119, 189, 0.2);
-        }
-
-        #btn-registros.active {
-            background: white !important;
-            color: var(--consumo-color) !important;
-            border: 2px solid var(--consumo-color) !important;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-        #btn-ingresos.active {
-            background: white !important;
-            color: var(--ingreso-color) !important;
-            border: 2px solid var(--ingreso-color) !important;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
+        button.action-btn:hover { opacity: 0.9; }
 
         /* === BARRA DE BÚSQUEDA === */
         .search-container {
             width: 100%;
             position: relative;
-            margin-top: 5px;
-            transition: all 0.3s;
+            margin-bottom: 15px;
         }
         .search-input {
             width: 100%;
-            /* Agregamos espacio a la derecha (45px) para que el texto no se oculte tras la X */
-            padding: 14px 45px 14px 45px; 
+            padding: 12px 45px 12px 45px; 
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
-            font-family: inherit;
             box-sizing: border-box;
             outline: none;
-            transition: all 0.3s;
-            color: #333;
             background-color: white;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
         .search-input:focus {
-            border-color: var(--active-color);
-            box-shadow: 0 0 0 4px var(--active-bg);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-bg);
         }
         .search-icon {
             position: absolute;
@@ -231,14 +214,8 @@
             width: 20px;
             height: 20px;
             color: #999;
-            transition: color 0.3s;
             pointer-events: none;
         }
-        .search-container:focus-within .search-icon {
-            color: var(--active-color);
-        }
-        
-        /* === ÍCONO DE BORRAR (X) === */
         .clear-search {
             position: absolute;
             right: 15px;
@@ -248,105 +225,76 @@
             height: 20px;
             color: #999;
             cursor: pointer;
-            display: none; /* Oculto por defecto hasta que escribas algo */
-            align-items: center;
-            justify-content: center;
-            transition: color 0.3s;
+            display: none;
         }
-        .clear-search:hover {
-            color: var(--active-color);
-        }
+        .clear-search:hover { color: var(--primary-color); }
 
-        /* === BOTÓN ACTUALIZAR DATOS === */
-        .refresh-btn {
-            background-color: var(--active-color); 
+        /* Botón de impresión en tabla */
+        .print-row-btn {
+            background-color: #495057;
             color: white;
             border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 12px;
             font-weight: bold;
-            font-size: 1.1rem;
-            width: 100%;
-            max-width: 1000px;
-            transition: background-color 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 5px;
         }
-        .refresh-btn:hover {
-            filter: brightness(0.9);
-        }
-        
+        .print-row-btn:hover { background-color: #343a40; }
+
+        /* Tabla de Citas Estilo Tarjeta Responsiva */
         .table-container {
             width: 100%;
-            max-width: 1000px;
-            background: transparent; 
-            overflow: visible;
+            margin-top: 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
         th, td {
             padding: 12px 15px;
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: var(--active-bg);
-            color: var(--active-color);
+            background-color: var(--primary-bg);
+            color: var(--primary-color);
             font-weight: 700;
-            transition: all 0.3s;
         }
-        tr:hover {
-            background-color: #f9f9f9;
-        }
+        tr:hover { background-color: #f9f9f9; }
+
         .loading {
             padding: 20px;
             text-align: center;
             font-weight: bold;
-            color: var(--active-color);
-            background: white;
-            border-radius: 8px;
+            color: var(--primary-color);
         }
 
-        @media (max-width: 768px) {
-            h1 { font-size: 1.25rem; }
-            
-            .metrics-container {
-                padding: 12px 5px;
-                gap: 5px;
-            }
-            .metric-title { font-size: 0.65rem; }
-            .metric-value { font-size: 1.15rem; }
-            .metric-divider { height: 35px; }
-            
-            .tabs-container {
-                flex-direction: column;
-            }
-            
-            .search-input {
-                font-size: 0.95rem;
-                /* Espacio ajustado para los íconos de los lados en el celular */
-                padding: 12px 42px 12px 42px; 
-            }
+        /* Estructura para impresión individual de comprobante */
+        .print-ticket {
+            display: none;
+        }
 
-            .refresh-btn {
-                font-size: 1rem;
-                padding: 12px;
+        @media print {
+            body { background: white; padding: 0; }
+            .container, .view, .home-menu, .search-container, .menu-btn, .header-title, .subtitle, .table-container { display: none !important; }
+            .print-ticket {
+                display: block !important;
+                padding: 20px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #000;
             }
-            
-            table {
-                background: transparent;
-                box-shadow: none;
-            }
+            .ticket-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+            .ticket-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; border-bottom: 1px dotted #ccc; padding-bottom: 4px; }
+            .ticket-footer { margin-top: 30px; border-top: 1px dashed #000; padding-top: 10px; text-align: center; font-size: 12px; }
+        }
+
+        /* Diseño adaptable para móviles (Tarjetas) */
+        @media (max-width: 768px) {
             table, thead, tbody, th, td, tr {
                 display: block;
                 width: 100%;
@@ -356,305 +304,418 @@
                 top: -9999px;
                 left: -9999px;
             }
-            
             tr {
-                margin-bottom: 18px; 
-                border: 1px solid #b0bec5; 
-                border-top: 5px solid var(--active-color); 
-                border-radius: 12px; 
-                box-shadow: 0 4px 8px rgba(0,0,0,0.12); 
-                background-color: #ffffff;
-                overflow: hidden;
-                transition: border-color 0.3s;
+                margin-bottom: 15px;
+                border: 1px solid #b0bec5;
+                border-top: 4px solid var(--primary-color);
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                background-color: #fff;
+                padding: 5px;
             }
-            
             td {
                 border: none;
-                border-bottom: 1px solid #f0f0f0; 
+                border-bottom: 1px solid #f0f0f0;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 6px 12px; 
+                padding: 8px 10px;
                 text-align: right;
-                box-sizing: border-box;
-                word-wrap: break-word;
-                font-size: 0.9rem; 
-                color: #333; 
+                font-size: 0.9rem;
             }
-            td:last-child {
-                border-bottom: 0;
-            }
-
+            td:last-child { border-bottom: 0; }
             td::before {
                 content: attr(data-label);
-                font-weight: 800; 
-                color: var(--active-color);
+                font-weight: 800;
+                color: var(--primary-color);
                 text-align: left;
-                padding-right: 10px;
-                flex-shrink: 0;
-                max-width: 45%;
-                font-size: 0.75rem; 
-                text-transform: uppercase; 
-                transition: color 0.3s;
+                font-size: 0.75rem;
+                text-transform: uppercase;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
+<div class="container">
+    <h2 class="header-title">Centro Médico Integral Santa Celia</h2>
+    <div class="subtitle">Sistema de Registro y Agendamiento de Citas</div>
+
+    <!-- PANTALLA 1: INICIO -->
+    <div id="view-home" class="view active">
+        <div class="home-menu">
+            <p style="text-align: center; color: #555; font-size: 16px;">Seleccione una opción para comenzar:</p>
+            <button class="menu-btn btn-agendar" onclick="cambiarVista('form')">📅 Agendar Cita</button>
+            <button class="menu-btn btn-ver" onclick="cambiarVista('list'); cargarCitas();">📋 Ver Citas Agendadas</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: FORMULARIO DE AGENDAMIENTO -->
+    <div id="view-form" class="view">
+        <button class="menu-btn btn-volver" onclick="cambiarVista('home')">⬅ Volver al Menú</button>
         
-        <div class="title-bar">
-            <!-- TÍTULO CON NUEVO LOGO (icono4.png) -->
-            <div class="brand">
-                <img src="icono4.png" alt="Logo CVB">
-                <h1>Combustible CVB</h1>
-            </div>
-            
-            <div class="header-actions">
-                <!-- BOTÓN LLAMAR A JAMES -->
-                <a href="tel:956537402" class="action-btn call-btn" onclick="return confirm('¿Llamar a James?');" title="Llamar a James">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                </a>
+        <form id="appointmentForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="citaId">ID de Cita (Automático)</label>
+                    <input type="text" id="citaId" readonly>
+                </div>
 
-                <!-- BOTÓN RECARGAR -->
-                <button class="action-btn reload-btn" onclick="location.reload()" title="Recargar App Completa">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                </button>
+                <div class="form-group">
+                    <label for="fechaHoraVisual">Fecha y Hora</label>
+                    <input type="text" id="fechaHoraVisual" readonly>
+                    <input type="hidden" id="fechaVal">
+                    <input type="hidden" id="horaVal">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="area">Área Médica</label>
+                    <select id="area" required>
+                        <option value="" disabled selected>Seleccione un área...</option>
+                        <option value="MEDICINA GENERAL">MEDICINA GENERAL</option>
+                        <option value="ODONTOLOGIA">ODONTOLOGIA</option>
+                        <option value="LABORATORIO">LABORATORIO</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="nombrePaciente">Nombre del Paciente</label>
+                    <input type="text" id="nombrePaciente" placeholder="Apellidos y Nombres" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dniPaciente">DNI</label>
+                    <input type="text" id="dniPaciente" maxlength="8" placeholder="Ingrese DNI" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edadPaciente">Edad</label>
+                    <input type="number" id="edadPaciente" placeholder="Edad en años" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="servicio">Servicio / Examen (Tarifario)</label>
+                    <div class="service-row">
+                        <div class="service-container">
+                            <select id="servicio" required onchange="cargarPrecioAutomatico()">
+                                <option value="" disabled selected>Seleccione o busque un servicio...</option>
+                                <option value="HEMOGRAMA COMPLETO" data-precio="30">1. HEMOGRAMA COMPLETO</option>
+                                <option value="GLUCOSA" data-precio="10">2. GLUCOSA</option>
+                                <option value="COLESTEROL" data-precio="10">3. COLESTEROL</option>
+                                <option value="TRIGRICELIDOS" data-precio="10">4. TRIGRICELIDOS</option>
+                                <option value="UREA" data-precio="10">5. UREA</option>
+                                <option value="CREATININA" data-precio="10">6. CREATININA</option>
+                                <option value="ACIDO URICO" data-precio="20">7. ACIDO URICO</option>
+                                <option value="BILIRRUBINA TOTAL, DIRECTA Y INDIRECTA" data-precio="30">8. BILIRRUBINA TOTAL, DIRECTA Y INDIRECTA</option>
+                                <option value="TGO" data-precio="10">9. TGO</option>
+                                <option value="TGP" data-precio="10">10. TGP</option>
+                                <option value="FOSFATASA ALALINA SIMPLE" data-precio="10">11. FOSFATASA ALALINA SIMPLE</option>
+                                <option value="PROTEINAS TOTALES" data-precio="10">12. PROTEINAS TOTALES</option>
+                                <option value="ALBUMINA" data-precio="10">13. ALBUMINA</option>
+                                <option value="GLOBULINA" data-precio="10">14. GLOBULINA</option>
+                                <option value="EXAMEN DE HECES SIMPLE" data-precio="10">15. EXAMEN DE HECES SIMPLE</option>
+                                <option value="COPROOLOGICO FUNCIONAL" data-precio="40">16. COPROOLOGICO FUNCIONAL</option>
+                                <option value="EXAMEN SERIADO DE HECES" data-precio="20">17. EXAMEN SERIADO DE HECES</option>
+                                <option value="TEST DE GRAHAM" data-precio="15">18. TEST DE GRAHAM</option>
+                                <option value="REACCION INFLAMATORIA" data-precio="20">19. REACCION INFLAMATORIA</option>
+                                <option value="EXAMEN COMPLETO DE HORINA" data-precio="10">20. EXAMEN COMPLETO DE HORINA</option>
+                                <option value="UROCULTIVO" data-precio="50">21. UROCULTIVO</option>
+                                <option value="DESCARTE DE EMBARAZO ( CUALITATIVO)" data-precio="20">22. DESCARTE DE EMBARAZO ( CUALITATIVO)</option>
+                                <option value="DESCARTE DE EMBARAZO ( CUANTITATIVO)" data-precio="50">23. DESCARTE DE EMBARAZO ( CUANTITATIVO)</option>
+                                <option value="PCR CUALITATIVO" data-precio="20">24. PCR CUALITATIVO</option>
+                                <option value="PCR CUANTITATIVO" data-precio="50">25. PCR CUANTITATIVO</option>
+                                <option value="FACTOR REMATOIDEO" data-precio="20">26. FACTOR REMATOIDEO</option>
+                                <option value="ACLUTINACIONES" data-precio="20">27. ACLUTINACIONES</option>
+                                <option value="HEMOGLOBINA" data-precio="10">28. HEMOGLOBINA</option>
+                                <option value="GRUPO Y FACTOR ABO" data-precio="15">29. GRUPO Y FACTOR ABO</option>
+                                <option value="PRUEBA DE HELICOBACTER PYLORI" data-precio="30">30. PRUEBA DE HELICOBACTER PYLORI</option>
+                                <option value="DUAL VIH SIFILIS" data-precio="50">31. DUAL VIH SIFILIS</option>
+                                <option value="DESCARTE DE VIH" data-precio="30">32. DESCARTE DE VIH</option>
+                                <option value="DESCRATE DE SIFILIS" data-precio="30">33. DESCRATE DE SIFILIS</option>
+                                <option value="HEPATITIS A" data-precio="30">34. HEPATITIS A</option>
+                                <option value="HEBATTITIS B" data-precio="30">35. HEBATTITIS B</option>
+                                <option value="HEPATITIS C" data-precio="30">36. HEPATITIS C</option>
+                                <option value="TP Y IMR" data-precio="30">37. TP Y IMR</option>
+                                <option value="TP-IMR-TTPA" data-precio="50">38. TP-IMR-TTPA</option>
+                                <option value="HEMOGLOBINA GLICOSILADA" data-precio="50">39. HEMOGLOBINA GLICOSILADA</option>
+                                <option value="TOLERANCIA A LA GLUCOSA" data-precio="40">40. TOLERANCIA A LA GLUCOSA</option>
+                                <option value="TIEMPO SANGRIA Y TIEMPO DE GOAGULACION" data-precio="10">41. TIEMPO SANGRIA Y TIEMPO DE GOAGULACION</option>
+                                <option value="BK ESPUTO" data-precio="20">42. BK ESPUTO</option>
+                                <option value="SECRECION VAGINAL" data-precio="20">43. SECRECION VAGINAL</option>
+                                <option value="CULTIVO DE SECRECION VAGINAL" data-precio="50">44. CULTIVO DE SECRECION VAGINAL</option>
+                                <option value="SECRECION DE GLANDE" data-precio="20">45. SECRECION DE GLANDE</option>
+                                <option value="SECRECION DE PIEL" data-precio="20">46. SECRECION DE PIEL</option>
+                                <option value="TEST DE HELECHO" data-precio="20">47. TEST DE HELECHO</option>
+                                <option value="CERTIFICADO DE SALUBRIDA" data-precio="20">48. CERTIFICADO DE SALUBRIDA</option>
+                                <option value="AGA Y ELECTROLITOS" data-precio="120">49. AGA Y ELECTROLITOS</option>
+                                <option value="LAMINA PERIFERICA" data-precio="50">50. LAMINA PERIFERICA</option>
+                                <option value="GOTA GRUESA Y BARTONELIA" data-precio="20">51. GOTA GRUESA Y BARTONELIA</option>
+                            </select>
+                            <button type="button" class="search-btn" onclick="buscarServicio()">🔍 Buscar</button>
+                        </div>
+                        <div>
+                            <input type="text" id="precioServicio" placeholder="Costo S/" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" rows="3" placeholder="Detalles adicionales de la cita..."></textarea>
+                </div>
             </div>
-        </div>
+
+            <div class="actions">
+                <button type="submit" id="btn-save" class="action-btn">Agendar Cita</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- PANTALLA 3: VER CITAS AGENDADAS -->
+    <div id="view-list" class="view">
+        <button class="menu-btn btn-volver" onclick="cambiarVista('home')">⬅ Volver al Menú</button>
         
-        <!-- PANEL DE MÉTRICAS -->
-        <div class="metrics-container">
-            <div class="metric-block">
-                <span class="metric-title">Lote</span>
-                <span id="lote-value" class="metric-value">...</span>
-            </div>
-            <div class="metric-divider"></div>
-            <div class="metric-block">
-                <span class="metric-title">G.Recargados</span> 
-                <span id="recargados-value" class="metric-value">...</span>
-            </div>
-            <div class="metric-divider"></div>
-            <div class="metric-block">
-                <span class="metric-title">Stock</span>
-                <span id="stock-value" class="metric-value">...</span>
-            </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; color: var(--primary-color);">Citas Registradas en el Sistema</h3>
+            <button type="button" class="search-btn" onclick="cargarCitas()">🔄 Actualizar</button>
         </div>
 
-        <div class="tabs-container">
-            <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
-            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
-        </div>
-
-        <!-- BARRA DE BÚSQUEDA CON BOTÓN DE "X" -->
+        <!-- BARRA DE BÚSQUEDA -->
         <div class="search-container">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar unidad, placa, nombre, operador...">
-            
-            <!-- Icono de X para limpiar -->
+            <input type="text" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar por paciente, DNI, área o servicio...">
             <svg class="clear-search" id="clearSearchBtn" onclick="limpiarBusqueda()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </div>
 
-        <button class="refresh-btn" onclick="cargarDatos()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            Actualizar Datos
-        </button>
+        <div id="tablaContenedor" class="table-container">
+            <div class="loading">Cargando citas desde Google Sheets...</div>
+        </div>
     </div>
+</div>
 
-    <div class="table-container">
-        <table>
-            <thead id="table-head">
-                <!-- Las cabeceras se cargarán aquí -->
-            </thead>
-            <tbody id="table-body">
-                <tr><td colspan="10" class="loading">Cargando datos...</td></tr>
-            </tbody>
-        </table>
+<!-- COMPROBANTE PARA IMPRESIÓN INDIVIDUAL -->
+<div id="ticketPrint" class="print-ticket">
+    <div class="ticket-header">
+        <h2 style="margin:0; font-size: 18px;">CENTRO MÉDICO INTEGRAL SANTA CELIA</h2>
+        <p style="margin: 5px 0 0 0; font-size: 13px;">Comprobante de Cita Médica</p>
     </div>
+    <div class="ticket-row"><strong>ID de Cita:</strong> <span id="t-id"></span></div>
+    <div class="ticket-row"><strong>Fecha y Hora:</strong> <span id="t-fecha"></span></div>
+    <div class="ticket-row"><strong>Área Médica:</strong> <span id="t-area"></span></div>
+    <div class="ticket-row"><strong>Paciente:</strong> <span id="t-paciente"></span></div>
+    <div class="ticket-row"><strong>DNI:</strong> <span id="t-dni"></span></div>
+    <div class="ticket-row"><strong>Edad:</strong> <span id="t-edad"></span></div>
+    <div class="ticket-row"><strong>Servicio:</strong> <span id="t-servicio"></span></div>
+    <div class="ticket-row"><strong>Costo:</strong> <span id="t-costo"></span></div>
+    <div class="ticket-row"><strong>Observaciones:</strong> <span id="t-obs"></span></div>
+    <div class="ticket-footer">
+        Dirección: [Actualizar Dirección] | Teléfono: [Actualizar Teléfono]<br>
+        ¡Gracias por confiar en nosotros!
+    </div>
+</div>
 
-    <script>
-        const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
+<script>
+    let globalCitasData = [];
+
+    function cambiarVista(vista) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        if (vista === 'home') document.getElementById('view-home').classList.add('active');
+        if (vista === 'form') {
+            document.getElementById('view-form').classList.add('active');
+            generarNuevoIdYFecha();
+        }
+        if (vista === 'list') document.getElementById('view-list').classList.add('active');
+    }
+
+    function generarNuevoIdYFecha() {
+        const randomId = 'SC-' + Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('citaId').value = randomId;
+
+        const ahora = new Date();
+        const fechaStr = ahora.toLocaleDateString();
+        const horaStr = ahora.toLocaleTimeString();
+
+        document.getElementById('fechaHoraVisual').value = fechaStr + ' ' + horaStr;
+        document.getElementById('fechaVal').value = fechaStr;
+        document.getElementById('horaVal').value = horaStr;
+    }
+
+    function cargarPrecioAutomatico() {
+        const select = document.getElementById('servicio');
+        const optionSeleccionada = select.options[select.selectedIndex];
+        const precio = optionSeleccionada.getAttribute('data-precio');
+        if (precio) {
+            document.getElementById('precioServicio').value = precio;
+        }
+    }
+
+    function buscarServicio() {
+        let termino = prompt("Ingrese el nombre del examen o servicio que desea buscar:");
+        if (!termino) return;
         
-        const gidStock = '252157837';      
-        const gidExtra = '1813245410';     
-        const gidRegistros = '481287721';  
-        const gidIngresos = '690045193';   
+        termino = termino.toLowerCase();
+        let select = document.getElementById('servicio');
+        let opciones = select.options;
+        let encontrado = false;
 
-        let pestanaActiva = 'registros';
-
-        function cambiarPestana(pestana) {
-            if (pestanaActiva === pestana) return;
-
-            pestanaActiva = pestana;
-            const root = document.documentElement;
-
-            if (pestana === 'registros') {
-                root.style.setProperty('--active-color', 'var(--consumo-color)');
-                root.style.setProperty('--active-bg', 'var(--consumo-bg)');
-                document.getElementById('btn-registros').classList.add('active');
-                document.getElementById('btn-ingresos').classList.remove('active');
-            } else {
-                root.style.setProperty('--active-color', 'var(--ingreso-color)');
-                root.style.setProperty('--active-bg', 'var(--ingreso-bg)');
-                document.getElementById('btn-ingresos').classList.add('active');
-                document.getElementById('btn-registros').classList.remove('active');
-            }
-            
-            cargarDatos();
-        }
-
-        // === NUEVA FUNCIÓN PARA LIMPIAR LA BÚSQUEDA ===
-        function limpiarBusqueda() {
-            const input = document.getElementById('searchInput');
-            input.value = '';
-            filtrarTabla(); // Re-ejecuta el filtro (mostrará todo)
-            input.focus();  // Regresa el cursor a la barra
-        }
-
-        // === FUNCIÓN DE BÚSQUEDA ACTUALIZADA ===
-        function filtrarTabla() {
-            const input = document.getElementById('searchInput');
-            const filtro = input.value.toLowerCase();
-            const tabla = document.getElementById('table-body');
-            const filas = tabla.getElementsByTagName('tr');
-            const clearBtn = document.getElementById('clearSearchBtn');
-
-            // Mostrar u ocultar la 'X' dependiendo si hay texto escrito
-            if (filtro.length > 0) {
-                clearBtn.style.display = 'flex';
-            } else {
-                clearBtn.style.display = 'none';
-            }
-
-            for (let i = 0; i < filas.length; i++) {
-                if (filas[i].querySelector('.loading')) continue;
-                
-                let textoFila = filas[i].textContent || filas[i].innerText;
-                
-                if (textoFila.toLowerCase().indexOf(filtro) > -1) {
-                    filas[i].style.display = "";
-                } else {
-                    filas[i].style.display = "none";
-                }
+        for (let i = 0; i < opciones.length; i++) {
+            if (opciones[i].text.toLowerCase().includes(termino)) {
+                select.selectedIndex = i;
+                encontrado = true;
+                cargarPrecioAutomatico();
+                break;
             }
         }
 
-        async function cargarDatos() {
-            const tbody = document.getElementById('table-body');
-            const thead = document.getElementById('table-head');
-            const inputBusqueda = document.getElementById('searchInput');
-            const clearBtn = document.getElementById('clearSearchBtn');
-            
-            const stockValueEl = document.getElementById('stock-value');
-            const loteValueEl = document.getElementById('lote-value');
-            const recargadosValueEl = document.getElementById('recargados-value');
-            
-            tbody.innerHTML = '<tr><td colspan="10" class="loading">Sincronizando con Excel...</td></tr>';
-            stockValueEl.innerText = '...';
-            loteValueEl.innerText = '...';
-            recargadosValueEl.innerText = '...';
-            
-            // Limpiar búsqueda al cargar nuevos datos
-            inputBusqueda.value = "";
-            clearBtn.style.display = 'none';
-
-            const noCache = new Date().getTime();
-            
-            const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
-            const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:B2&headers=1&_=${noCache}`;
-            const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
-            const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
-
-            try {
-                const responseStock = await fetch(urlStock);
-                const textStock = await responseStock.text();
-                const jsonStringStock = textStock.substring(textStock.indexOf('({') + 1, textStock.lastIndexOf('})') + 1);
-                const dataStock = JSON.parse(jsonStringStock);
-                
-                let stockCell = dataStock.table.rows[0].c[0];
-                let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
-                stockValueEl.innerText = stockText;
-            } catch (error) {
-                stockValueEl.innerText = 'Error';
-            }
-
-            try {
-                const responseExtra = await fetch(urlExtra);
-                const textExtra = await responseExtra.text();
-                const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
-                const dataExtra = JSON.parse(jsonStringExtra);
-                
-                let columnasData = dataExtra.table.rows[0].c;
-                let loteCell = columnasData[0];
-                let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
-                loteValueEl.innerText = loteText;
-
-                let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
-                let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
-                recargadosValueEl.innerText = recargadosText;
-            } catch (error) {
-                loteValueEl.innerText = 'Error';
-                recargadosValueEl.innerText = 'Error';
-            }
-
-            try {
-                const response = await fetch(urlTabla);
-                const text = await response.text();
-                
-                const jsonString = text.substring(text.indexOf('({') + 1, text.lastIndexOf('})') + 1);
-                const data = JSON.parse(jsonString);
-
-                thead.innerHTML = '';
-                tbody.innerHTML = '';
-
-                const headers = data.table.cols;
-                let trHead = document.createElement('tr');
-                headers.forEach(header => {
-                    if(header.label) {
-                        let th = document.createElement('th');
-                        th.innerText = header.label;
-                        trHead.appendChild(th);
-                    }
-                });
-                thead.appendChild(trHead);
-
-                const rows = data.table.rows.reverse(); 
-                
-                rows.forEach(row => {
-                    let tr = document.createElement('tr');
-                    row.c.forEach((cell, index) => {
-                        if (index < headers.length && headers[index].label) {
-                            let td = document.createElement('td');
-                            td.setAttribute('data-label', headers[index].label); 
-                            td.innerText = (cell && cell.f) ? cell.f : (cell && cell.v ? cell.v : '-');
-                            tr.appendChild(td);
-                        }
-                    });
-                    tbody.appendChild(tr);
-                });
-
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="10" class="loading" style="color:red;">Error de conexión. Intente actualizar.</td></tr>';
-            }
+        if (!encontrado) {
+            alert("No se encontró ningún servicio con ese nombre en el tarifario.");
         }
+    }
 
-        window.onload = cargarDatos;
-    </script>
+    function limpiarBusqueda() {
+        const input = document.getElementById('searchInput');
+        input.value = '';
+        filtrarTabla();
+        input.focus();
+    }
+
+    function filtrarTabla() {
+        const input = document.getElementById('searchInput');
+        const filtro = input.value.toLowerCase();
+        const tabla = document.getElementById('table-body');
+        if (!tabla) return;
+        const filas = tabla.getElementsByTagName('tr');
+        const clearBtn = document.getElementById('clearSearchBtn');
+
+        clearBtn.style.display = filtro.length > 0 ? 'block' : 'none';
+
+        for (let i = 0; i < filas.length; i++) {
+            if (filas[i].querySelector('.loading')) continue;
+            let textoFila = filas[i].textContent || filas[i].innerText;
+            filas[i].style.display = textoFila.toLowerCase().indexOf(filtro) > -1 ? "" : "none";
+        }
+    }
+
+    // URL de tu Apps Script
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxgCP57D_ILxnhZUYE9QdMY3JOcUrCsnsGpjUtIF-ZP4klyV--W-2IC877RxHc9tjcq1Q/exec";
+
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const datos = {
+            id: document.getElementById('citaId').value,
+            fecha: document.getElementById('fechaVal').value,
+            hora: document.getElementById('horaVal').value,
+            area: document.getElementById('area').value,
+            paciente: document.getElementById('nombrePaciente').value,
+            edad: document.getElementById('edadPaciente').value,
+            dni: document.getElementById('dniPaciente').value,
+            servicio: document.getElementById('servicio').value,
+            costo: document.getElementById('precioServicio').value,
+            observaciones: document.getElementById('observaciones').value
+        };
+
+        const btnSave = document.getElementById('btn-save');
+        btnSave.innerText = "Agendando...";
+        btnSave.disabled = true;
+
+        fetch(URL_APPS_SCRIPT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            alert("¡Cita agendada y registrada en Google Sheets con éxito!");
+            document.getElementById('appointmentForm').reset();
+            cambiarVista('home');
+            btnSave.innerText = "Agendar Cita";
+            btnSave.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Hubo un error al registrar la cita.");
+            btnSave.innerText = "Agendar Cita";
+            btnSave.disabled = false;
+        });
+    });
+
+    function cargarCitas() {
+        const contenedor = document.getElementById('tablaContenedor');
+        contenedor.innerHTML = '<div class="loading">Cargando citas desde Google Sheets...</div>';
+
+        fetch(URL_APPS_SCRIPT + "?action=leer")
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                contenedor.innerHTML = '<div class="loading">No hay citas registradas todavía.</div>';
+                return;
+            }
+
+            globalCitasData = data.reverse(); // Mostrar más recientes primero
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha / Hora</th>
+                            <th>Área</th>
+                            <th>Paciente</th>
+                            <th>DNI</th>
+                            <th>Servicio / Costo</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+            `;
+
+            globalCitasData.forEach((fila, index) => {
+                html += `
+                    <tr>
+                        <td data-label="ID">${fila.id || ''}</td>
+                        <td data-label="Fecha/Hora">${fila.fecha || ''} ${fila.hora || ''}</td>
+                        <td data-label="Área">${fila.area || ''}</td>
+                        <td data-label="Paciente">${fila.paciente || ''} (Edad: ${fila.edad || ''})</td>
+                        <td data-label="DNI">${fila.dni || ''}</td>
+                        <td data-label="Servicio">${fila.servicio || ''} - <strong>S/ ${fila.costo || ''}</strong></td>
+                        <td data-label="Acción">
+                            <button class="print-row-btn" onclick="imprimirCita(${index})">🖨️ Imprimir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            contenedor.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error al cargar:', error);
+            contenedor.innerHTML = '<div class="loading" style="color: red;">Error al conectar con Google Sheets.</div>';
+        });
+    }
+
+    function imprimirCita(index) {
+        const c = globalCitasData[index];
+        document.getElementById('t-id').innerText = c.id || '';
+        document.getElementById('t-fecha').innerText = (c.fecha || '') + ' ' + (c.hora || '');
+        document.getElementById('t-area').innerText = c.area || '';
+        document.getElementById('t-paciente').innerText = c.paciente || '';
+        document.getElementById('t-dni').innerText = c.dni || '';
+        document.getElementById('t-edad').innerText = c.edad || '';
+        document.getElementById('t-servicio').innerText = c.servicio || '';
+        document.getElementById('t-costo').innerText = 'S/ ' + (c.costo || '');
+        document.getElementById('t-obs').innerText = c.observaciones || 'Ninguna';
+
+        window.print();
+    }
+</script>
+
 </body>
 </html>
