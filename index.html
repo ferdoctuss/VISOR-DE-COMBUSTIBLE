@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="light dark">
     <meta id="meta-theme-color" name="theme-color" content="#0F2742">
     <title>Control de Combustible - Grupo Bautista</title>
@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="icono.png">
     <link rel="icon" href="icono.png" type="image/png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Combustible CVB">
 
     <style>
@@ -72,7 +72,6 @@
         html {
             -webkit-text-size-adjust: 100%;
             touch-action: manipulation;
-            background: var(--navy);
         }
         body {
             margin: 0; padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px));
@@ -96,7 +95,7 @@
         /* === BARRA SUPERIOR CORPORATIVA === */
         .topbar {
             background: var(--navy); color: #fff;
-            padding: 14px 16px 14px;
+            padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
         }
         .inner { max-width: 1000px; margin: 0 auto; }
         .title-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -990,6 +989,7 @@
 
         actualizarConteo();
 
+        // Si hay una búsqueda activa, oculta el gráfico; si está vacía, lo vuelve a mostrar
         if (filtro.length > 0) {
             chartCard.style.display = 'none';
         } else if (filasActuales.length > 0) {
