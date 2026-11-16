@@ -60,7 +60,7 @@
         button { font-family: inherit; }
         :focus-visible { outline: 2px solid var(--active-color); outline-offset: 2px; }
 
-        /* === CABECERA FIJA HASTA LA FILA DE LOTE === */
+        /* === CABECERA FIJA HASTA LA BARRA DE BÚSQUEDA === */
         .sticky-header {
             position: sticky;
             top: 0;
@@ -124,11 +124,11 @@
         .project-btn:hover { color: #fff; }
         .project-btn.active { color: #fff; font-weight: 700; border-bottom-color: #fff; }
 
-        /* Contenedor fijo para las métricas */
-        .metrics-wrapper {
+        /* Contenedor fijo para métricas, pestañas y búsqueda */
+        .sticky-controls {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 10px 16px;
+            padding: 10px 16px 8px;
         }
 
         /* Indicadores */
@@ -137,6 +137,7 @@
             background: var(--surface); border: 1px solid var(--line);
             border-top: 3px solid var(--active-color); border-radius: var(--radius);
             box-shadow: var(--shadow);
+            margin-bottom: 8px;
         }
         .metric-block { padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .metric-block + .metric-block { border-left: 1px solid var(--line); }
@@ -144,13 +145,10 @@
         .metric-value { font-size: 1.35rem; font-weight: 700; line-height: 1.05; overflow-wrap: anywhere; }
         .metric-block.stock .metric-value { color: var(--active-color); font-size: 1.55rem; }
 
-        /* === CONTENIDO DESPLAZABLE === */
-        .app { width: 100%; max-width: 1000px; margin: 0 auto; padding: 6px 16px 0; }
-
         /* Pestañas */
         .tabs-container { display: flex; gap: 20px; border-bottom: 1px solid var(--line); }
         .tab-btn {
-            padding: 10px 2px; border: 0; background: none; cursor: pointer;
+            padding: 8px 2px; border: 0; background: none; cursor: pointer;
             color: var(--muted); font-size: .92rem; font-weight: 600;
             border-bottom: 3px solid transparent; margin-bottom: -1px;
         }
@@ -158,7 +156,7 @@
 
         /* Búsqueda */
         .toolbar {
-            display: flex; gap: 8px; align-items: center; padding: 10px 0 6px;
+            display: flex; gap: 8px; align-items: center; padding-top: 10px;
         }
         .search-container { position: relative; flex: 1; }
         .search-input {
@@ -172,7 +170,10 @@
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
         .clear-search { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; padding: 7px; color: var(--muted); cursor: pointer; display: none; }
         .clear-search:hover { color: var(--ink); }
-        .count { margin: 2px 0 8px; font-size: .8rem; color: var(--muted); min-height: 1.1em; }
+
+        /* === CONTENIDO DESPLAZABLE === */
+        .app { width: 100%; max-width: 1000px; margin: 0 auto; padding: 8px 16px 0; }
+        .count { margin: 0 0 8px; font-size: .8rem; color: var(--muted); min-height: 1.1em; }
 
         /* Tabla */
         table {
@@ -194,8 +195,8 @@
 
         /* === MÓVIL: FICHAS COMPACTAS === */
         @media (max-width: 768px) {
-            .metrics-wrapper { padding: 8px 12px; }
-            .app { padding: 4px 12px 0; }
+            .sticky-controls { padding: 8px 12px 6px; }
+            .app { padding: 6px 12px 0; }
             table { background: transparent; border: 0; box-shadow: none; border-radius: 0; overflow: visible; }
             table, thead, tbody, tr, td { display: block; width: 100%; }
             thead { display: none; }
@@ -259,7 +260,7 @@
         </div>
     </div>
 
-    <div id="metrics-wrapper" class="metrics-wrapper">
+    <div class="sticky-controls">
         <div id="metrics-panel" class="metrics-container">
             <div class="metric-block">
                 <span class="metric-title">Lote</span>
@@ -274,37 +275,38 @@
                 <span id="stock-value" class="metric-value">...</span>
             </div>
         </div>
+
+        <div id="tabs-panel" class="tabs-container" role="tablist">
+            <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de consumo</button>
+            <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de combustible</button>
+        </div>
+
+        <!-- BÚSQUEDA + ACTUALIZAR -->
+        <div class="toolbar">
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="search" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar unidad, placa, operador..." aria-label="Buscar">
+                <svg class="clear-search" id="clearSearchBtn" onclick="limpiarBusqueda()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Borrar búsqueda">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+            <button id="sync-btn" class="icon-btn" onclick="cargarDatos()" aria-label="Actualizar datos" title="Actualizar datos">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 0 0-15-6.7L3 8"></path>
+                    <polyline points="3 3 3 8 8 8"></polyline>
+                    <path d="M3 12a9 9 0 0 0 15 6.7L21 16"></path>
+                    <polyline points="21 21 21 16 16 16"></polyline>
+                </svg>
+            </button>
+        </div>
     </div>
 </div>
 
 <div class="app">
-    <div id="tabs-panel" class="tabs-container" role="tablist">
-        <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de consumo</button>
-        <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de combustible</button>
-    </div>
-
-    <!-- BÚSQUEDA + ACTUALIZAR -->
-    <div class="toolbar">
-        <div class="search-container">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="search" id="searchInput" class="search-input" oninput="filtrarTabla()" placeholder="Buscar unidad, placa, operador..." aria-label="Buscar">
-            <svg class="clear-search" id="clearSearchBtn" onclick="limpiarBusqueda()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Borrar búsqueda">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </div>
-        <button id="sync-btn" class="icon-btn" onclick="cargarDatos()" aria-label="Actualizar datos" title="Actualizar datos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 0 0-15-6.7L3 8"></path>
-                <polyline points="3 3 3 8 8 8"></polyline>
-                <path d="M3 12a9 9 0 0 0 15 6.7L21 16"></path>
-                <polyline points="21 21 21 16 16 16"></polyline>
-            </svg>
-        </button>
-    </div>
     <div id="count" class="count" aria-live="polite"></div>
 
     <div class="table-container">
@@ -343,20 +345,23 @@
 
     function actualizarInterfazPorProyecto() {
         const root = document.documentElement;
-        const metricsWrapper = document.getElementById('metrics-wrapper');
+        const metricsPanel = document.getElementById('metrics-panel');
+        const tabsPanel = document.getElementById('tabs-panel');
         const btnIngresos = document.getElementById('btn-ingresos');
 
         root.style.setProperty('--active-color', colores[proyectoActivo][0]);
         root.style.setProperty('--active-light', colores[proyectoActivo][1]);
 
         if (proyectoActivo === 'Otros') {
-            metricsWrapper.style.display = 'none';
+            metricsPanel.style.display = 'none';
+            tabsPanel.style.display = 'none';
             btnIngresos.style.display = 'none';
             pestanaActiva = 'registros';
             document.getElementById('btn-registros').classList.add('active');
             document.getElementById('btn-ingresos').classList.remove('active');
         } else {
-            metricsWrapper.style.display = 'block';
+            metricsPanel.style.display = 'grid';
+            tabsPanel.style.display = 'flex';
             btnIngresos.style.display = 'block';
         }
     }
