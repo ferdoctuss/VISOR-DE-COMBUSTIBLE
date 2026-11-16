@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Data de Combustible CVB</title>
+    <title>Control de Combustible - Grupo Bautista</title>
     
     <!-- ICONOS Y CONFIGURACIÓN PARA IPHONE -->
     <link rel="apple-touch-icon" href="icono.png">
@@ -13,16 +13,21 @@
     <meta name="apple-mobile-web-app-title" content="Combustible CVB">
 
     <style>
-        /* === PALETA DE COLORES MEJORADA Y UNIFICADA === */
+        /* === PALETA DE COLORES === */
         :root {
-            --consumo-color: #2E7D32;      /* Verde institucional */
-            --consumo-light: #E8F5E9;      /* Fondo suave consumo */
+            --chipuluc-color: #2E7D32;   /* Verde */
+            --chipuluc-light: #E8F5E9;
             
-            --ingreso-color: #0277BD;      /* Azul institucional */
-            --ingreso-light: #E1F5FE;      /* Fondo suave ingresos */
+            --olmos-color: #0277BD;      /* Azul */
+            --olmos-light: #E1F5FE;
             
-            --active-color: var(--consumo-color);
-            --active-light: var(--consumo-light);
+            --otros-color: #D97706;      /* Ámbar / Naranja */
+            --otros-light: #FEF3C7;
+
+            --ingreso-color: #4B5563;    /* Gris oscuro para pestañas secundarias */
+            
+            --active-color: var(--chipuluc-color);
+            --active-light: var(--chipuluc-light);
             
             --text-primary: #1F2937;
             --text-secondary: #6B7280;
@@ -67,17 +72,29 @@
             gap: 10px;
         }
         .brand img {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             object-fit: contain;
+        }
+        
+        .title-container {
+            display: flex;
+            flex-direction: column;
         }
         h1 {
             color: var(--text-primary);
             margin: 0;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .header-actions {
@@ -114,11 +131,11 @@
             transform: rotate(90deg);
         }
 
-        /* === SELECTOR DE PROYECTOS (BOTONES SUPERIORES) === */
+        /* === SELECTOR DE PROYECTOS === */
         .projects-container {
             display: flex;
             width: 100%;
-            background: #D1D5DB;
+            background: #E5E7EB;
             padding: 4px;
             border-radius: 10px;
             gap: 4px;
@@ -133,15 +150,17 @@
             cursor: pointer;
             border: none;
             background: transparent;
-            color: #4B5563;
+            color: var(--text-secondary);
             transition: all 0.25s ease;
             text-align: center;
         }
         .project-btn.active {
             background: var(--card-bg);
-            color: var(--text-primary);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        #btn-chipuluc.active { color: var(--chipuluc-color); }
+        #btn-olmos.active { color: var(--olmos-color); }
+        #btn-otros.active { color: var(--otros-color); }
         
         /* === PANEL DE MÉTRICAS === */
         .metrics-container {
@@ -185,7 +204,7 @@
             color: var(--text-primary);
         }
 
-        /* === CONTROLES DE PESTAÑA (SEGMENTED CONTROL) === */
+        /* === CONTROLES DE PESTAÑA === */
         .tabs-container {
             display: flex;
             width: 100%;
@@ -199,7 +218,7 @@
             flex: 1;
             padding: 10px;
             border-radius: 7px;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 600;
             cursor: pointer;
             border: none;
@@ -209,13 +228,8 @@
         }
         .tab-btn.active {
             background: var(--card-bg);
+            color: var(--active-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        }
-        #btn-registros.active {
-            color: var(--consumo-color);
-        }
-        #btn-ingresos.active {
-            color: var(--ingreso-color);
         }
 
         /* === BARRA DE BÚSQUEDA === */
@@ -343,7 +357,8 @@
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 1.15rem; }
+            h1 { font-size: 1.1rem; }
+            .subtitle { font-size: 0.72rem; }
             
             .metrics-container {
                 padding: 10px 4px;
@@ -427,18 +442,14 @@
         <div class="title-bar">
             <!-- TÍTULO CON LOGO -->
             <div class="brand">
-                <img src="icono4.png" alt="Logo CVB">
-                <h1>Combustible CVB</h1>
+                <img src="icono4.png" alt="Logo Grupo Bautista">
+                <div class="title-container">
+                    <h1>Grupo Bautista</h1>
+                    <span class="subtitle">Control de combustible</span>
+                </div>
             </div>
             
             <div class="header-actions">
-                <!-- BOTÓN LLAMAR A JAMES -->
-                <a href="tel:956537402" class="action-btn call-btn" onclick="return confirm('¿Llamar a James?');" title="Llamar a James">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                </a>
-
                 <!-- BOTÓN RECARGAR -->
                 <button class="action-btn reload-btn" onclick="location.reload()" title="Recargar App Completa">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -451,7 +462,7 @@
 
         <!-- SELECTOR DE PROYECTOS -->
         <div class="projects-container">
-            <button id="btn-cutervo" class="project-btn active" onclick="cambiarProyecto('Cutervo')">Chipuluc</button>
+            <button id="btn-chipuluc" class="project-btn active" onclick="cambiarProyecto('Chipuluc')">Chipuluc</button>
             <button id="btn-olmos" class="project-btn" onclick="cambiarProyecto('Olmos')">Olmos</button>
             <button id="btn-otros" class="project-btn" onclick="cambiarProyecto('Otros')">Otros</button>
         </div>
@@ -523,38 +534,47 @@
         const gidRegistros = '481287721';  
         const gidIngresos = '690045193';   
 
-        let proyectoActivo = 'Cutervo'; // Por defecto Chipuluc (Cutervo)
+        let proyectoActivo = 'Chipuluc'; 
         let pestanaActiva = 'registros';
+
+        function actualizarColoresTema() {
+            const root = document.documentElement;
+            if (proyectoActivo === 'Chipuluc') {
+                root.style.setProperty('--active-color', 'var(--chipuluc-color)');
+                root.style.setProperty('--active-light', 'var(--chipuluc-light)');
+            } else if (proyectoActivo === 'Olmos') {
+                root.style.setProperty('--active-color', 'var(--olmos-color)');
+                root.style.setProperty('--active-light', 'var(--olmos-light)');
+            } else if (proyectoActivo === 'Otros') {
+                root.style.setProperty('--active-color', 'var(--otros-color)');
+                root.style.setProperty('--active-light', 'var(--otros-light)');
+            }
+        }
 
         function cambiarProyecto(proyecto) {
             if (proyectoActivo === proyecto) return;
             proyectoActivo = proyecto;
 
-            document.getElementById('btn-cutervo').classList.remove('active');
+            document.getElementById('btn-chipuluc').classList.remove('active');
             document.getElementById('btn-olmos').classList.remove('active');
             document.getElementById('btn-otros').classList.remove('active');
 
-            if (proyecto === 'Cutervo') document.getElementById('btn-cutervo').classList.add('active');
+            if (proyecto === 'Chipuluc') document.getElementById('btn-chipuluc').classList.add('active');
             if (proyecto === 'Olmos') document.getElementById('btn-olmos').classList.add('active');
             if (proyecto === 'Otros') document.getElementById('btn-otros').classList.add('active');
 
+            actualizarColoresTema();
             cargarDatos();
         }
 
         function cambiarPestana(pestana) {
             if (pestanaActiva === pestana) return;
-
             pestanaActiva = pestana;
-            const root = document.documentElement;
 
             if (pestana === 'registros') {
-                root.style.setProperty('--active-color', 'var(--consumo-color)');
-                root.style.setProperty('--active-light', 'var(--consumo-light)');
                 document.getElementById('btn-registros').classList.add('active');
                 document.getElementById('btn-ingresos').classList.remove('active');
             } else {
-                root.style.setProperty('--active-color', 'var(--ingreso-color)');
-                root.style.setProperty('--active-light', 'var(--ingreso-light)');
                 document.getElementById('btn-ingresos').classList.add('active');
                 document.getElementById('btn-registros').classList.remove('active');
             }
@@ -596,6 +616,8 @@
         }
 
         async function cargarDatos() {
+            actualizarColoresTema();
+            
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
             const inputBusqueda = document.getElementById('searchInput');
@@ -673,16 +695,14 @@
                 });
                 thead.appendChild(trHead);
 
-                // Filtrar filas según la columna C (índice 2) solo si estamos en la pestaña de registros
+                // Filtrar filas según la columna C (índice 2) para ambas pestañas
                 let rows = data.table.rows.reverse(); 
                 
-                if (pestanaActiva === 'registros') {
-                    rows = rows.filter(row => {
-                        let cellC = row.c[2]; // Columna C
-                        let valorC = (cellC && cellC.v) ? String(cellC.v).trim() : '';
-                        return valorC.toLowerCase() === proyectoActivo.toLowerCase();
-                    });
-                }
+                rows = rows.filter(row => {
+                    let cellC = row.c[2]; // Columna C
+                    let valorC = (cellC && cellC.v) ? String(cellC.v).trim() : '';
+                    return valorC.toLowerCase() === proyectoActivo.toLowerCase();
+                });
 
                 if (rows.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="${headers.length}" class="loading">No hay registros para ${proyectoActivo}</td></tr>`;
