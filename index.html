@@ -24,8 +24,6 @@
             --otros-color: #D97706;      /* Ámbar / Naranja */
             --otros-light: #FEF3C7;
 
-            --ingreso-color: #4B5563;    /* Gris oscuro para pestañas secundarias */
-            
             --active-color: var(--chipuluc-color);
             --active-light: var(--chipuluc-light);
             
@@ -695,17 +693,17 @@
                 });
                 thead.appendChild(trHead);
 
-                // Filtrar filas según la columna C (índice 2) para ambas pestañas
                 let rows = data.table.rows.reverse(); 
                 
+                // FILTRADO FLEXIBLE (Verifica si la columna C contiene la palabra clave)
                 rows = rows.filter(row => {
-                    let cellC = row.c[2]; // Columna C
-                    let valorC = (cellC && cellC.v) ? String(cellC.v).trim() : '';
-                    return valorC.toLowerCase() === proyectoActivo.toLowerCase();
+                    let cellC = row.c[2]; // Columna C (índice 2)
+                    let valorC = (cellC && cellC.v) ? String(cellC.v).trim().toLowerCase() : '';
+                    return valorC.includes(proyectoActivo.toLowerCase());
                 });
 
                 if (rows.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="${headers.length}" class="loading">No hay registros para ${proyectoActivo}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="${headers.length}" class="loading" style="color:#D97706;">No hay registros para "${proyectoActivo}" en la Columna C.</td></tr>`;
                     return;
                 }
                 
