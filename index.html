@@ -72,7 +72,7 @@
         /* === BARRA SUPERIOR CORPORATIVA === */
         .topbar {
             background: var(--navy); color: #fff;
-            padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 0;
+            padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px;
         }
         .inner { max-width: 1000px; margin: 0 auto; }
         .title-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -108,21 +108,54 @@
         .icon-btn.on-dark:hover { color: #fff; border-color: #fff; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Proyectos como navegación principal */
-        .segmented { display: flex; margin-top: 12px; }
-        .project-btn {
-            flex: 1; padding: 11px 6px 9px; border: 0; background: transparent; cursor: pointer;
-            color: rgba(255,255,255,.7); font-size: .95rem; font-weight: 600;
-            border-bottom: 3px solid transparent;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: color .15s, border-color .15s;
+        /* === BOTONES DE PROYECTO ESTILO PÍLDORA === */
+        .segmented {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
         }
-        .project-btn::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); }
+        .project-btn {
+            flex: 1;
+            padding: 9px 12px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .project-btn::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--dot);
+            transition: background 0.2s ease;
+        }
         #btn-chipuluc { --dot: #66BB6A; }
         #btn-olmos { --dot: #4FC3F7; }
         #btn-otros { --dot: #FBBF24; }
-        .project-btn:hover { color: #fff; }
-        .project-btn.active { color: #fff; font-weight: 700; border-bottom-color: #fff; }
+        .project-btn:hover {
+            border-color: rgba(255, 255, 255, 0.55);
+            color: #fff;
+        }
+        .project-btn.active {
+            background: var(--active-color);
+            border-color: var(--active-color);
+            color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+        }
+        .project-btn.active::before {
+            background: #FFFFFF;
+        }
 
         /* Contenedor fijo para métricas, pestañas y búsqueda */
         .sticky-controls {
@@ -180,7 +213,7 @@
             border: 1px solid var(--line);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 12px 14px;
+            padding: 12px 14px 12px;
             margin-bottom: 10px;
         }
         .chart-header {
@@ -210,14 +243,13 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 6px;
             align-items: end;
-            height: 112px;
-            padding-top: 16px;
+            height: auto;
+            padding-top: 2px;
         }
         .bar-col {
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
             justify-content: flex-end;
             min-width: 0;
         }
@@ -236,7 +268,7 @@
         .bar-track {
             width: 100%;
             max-width: 30px;
-            height: 62px;
+            height: 58px;
             background: var(--surface-2);
             border-radius: 5px;
             display: flex;
@@ -268,7 +300,8 @@
             font-size: 0.65rem;
             font-weight: 500;
             color: var(--muted);
-            margin-top: 1px;
+            margin-top: 2px;
+            line-height: 1.1;
         }
 
         .count { margin: 0 0 8px; font-size: .8rem; color: var(--muted); min-height: 1.1em; }
@@ -293,11 +326,14 @@
 
         /* === MÓVIL: FICHAS COMPACTAS === */
         @media (max-width: 768px) {
+            .topbar { padding-bottom: 12px; }
+            .segmented { gap: 6px; margin-top: 12px; }
+            .project-btn { padding: 8px 6px; font-size: 0.78rem; letter-spacing: 0.02em; }
             .sticky-controls { padding: 8px 12px 6px; }
             .app { padding: 6px 12px 0; }
-            .chart-card { padding: 10px 10px; margin-bottom: 8px; }
-            .bars-grid { gap: 4px; height: 104px; }
-            .bar-track { max-width: 24px; height: 54px; }
+            .chart-card { padding: 10px 10px 10px; margin-bottom: 8px; }
+            .bars-grid { gap: 4px; }
+            .bar-track { max-width: 24px; height: 50px; }
             .bar-val { font-size: 0.64rem; }
             .bar-day { font-size: 0.68rem; }
             .bar-date { font-size: 0.6rem; }
@@ -450,7 +486,6 @@
     let proyectoActivo = 'Chipuluc';
     let pestanaActiva = 'registros';
 
-    // Guardamos filas y cabeceras actuales para recalcular el KPI al buscar
     let filasActuales = [];
     let headersActuales = [];
 
@@ -566,17 +601,14 @@
         return '-';
     }
 
-    /* === PARSEO DE FECHA Y NÚMERO PARA EL GRÁFICO DE 7 DÍAS === */
     function parsearFechaCelda(cell) {
         if (!cell) return null;
-        // Formato nativo Google Visualization: "Date(2026,10,16)" o "Date(2026,10,16,13,15,10)"
         if (typeof cell.v === 'string' && cell.v.startsWith('Date(')) {
             const nums = cell.v.match(/\d+/g);
             if (nums && nums.length >= 3) {
                 return new Date(Number(nums[0]), Number(nums[1]), Number(nums[2]));
             }
         }
-        // Formato texto DD/MM/YYYY o DD-MM-YYYY
         const texto = String(cell.f || cell.v || '').trim();
         const match = texto.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
         if (match) {
@@ -610,7 +642,6 @@
             return;
         }
 
-        // Detectar dinámicamente índice de Fecha y Cantidad según las cabeceras
         let idxFecha = headersActuales.findIndex(h => h.label && h.label.toUpperCase().includes('FECHA'));
         if (idxFecha === -1) idxFecha = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? 0 : 1;
 
@@ -621,7 +652,6 @@
         ));
         if (idxCantidad === -1) idxCantidad = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? 4 : 3;
 
-        // Construir los últimos 7 días (desde hace 6 días hasta hoy)
         const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
@@ -644,7 +674,6 @@
             mapaTotales[key] = item;
         }
 
-        // Sumar cantidades por día
         rowsData.forEach(row => {
             if (!row || !row.c) return;
             const fecha = parsearFechaCelda(row.c[idxFecha]);
@@ -707,7 +736,6 @@
 
         const noCache = new Date().getTime();
 
-        // Métricas superiores solo para Chipuluc y Olmos
         if (proyectoActivo === 'Chipuluc' || proyectoActivo === 'Olmos') {
             stockValueEl.innerText = '...';
             loteValueEl.innerText = '...';
@@ -757,10 +785,8 @@
 
                     let filasValidas = dataExtra.table.rows.filter(r => r.c && r.c.some(celda => celda && celda.v !== null && String(celda.v).trim() !== ''));
 
-                    // N de Lote = cantidad de filas llenas desde la fila 2
                     loteValueEl.innerText = filasValidas.length;
 
-                    // G. Recargados = Columna D de la última fila llena
                     if (filasValidas.length > 0) {
                         let ultimaFila = filasValidas[filasValidas.length - 1];
                         let cellColumnaD = ultimaFila.c[3];
@@ -775,7 +801,6 @@
             }
         }
 
-        // Tabla principal
         const gidActual = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? gidRegistros : gidIngresos;
         const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
 
@@ -801,7 +826,6 @@
             });
             thead.appendChild(trHead);
 
-            // Columna B (índice 1) para 'registros' | Columna C (índice 2) para 'ingresos'
             let indiceColumnaFiltro = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? 1 : 2;
 
             let rows = data.table.rows.reverse();
