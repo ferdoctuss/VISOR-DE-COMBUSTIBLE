@@ -466,7 +466,7 @@
         </div>
         
         <!-- PANEL DE MÉTRICAS -->
-        <div class="metrics-container">
+        <div id="metrics-panel" class="metrics-container">
             <div class="metric-block">
                 <span class="metric-title">Lote</span>
                 <span id="lote-value" class="metric-value">...</span>
@@ -484,7 +484,7 @@
         </div>
 
         <!-- PESTAÑAS TIPO SEGMENTED CONTROL -->
-        <div class="tabs-container">
+        <div id="tabs-panel" class="tabs-container">
             <button id="btn-registros" class="tab-btn active" onclick="cambiarPestana('registros')">Registro de Consumo</button>
             <button id="btn-ingresos" class="tab-btn" onclick="cambiarPestana('ingresos')">Ingresos de Combustible</button>
         </div>
@@ -527,25 +527,46 @@
     <script>
         const sheetId = '1Ep5r38QoJSugFPRdhXCo8JCy4dRZuJSzsCb_qbK37eg';
         
-        const gidStock = '252157837';      
-        const gidExtra = '1813245410';     
+        // GIDs para Chipuluc
+        const gidStockChipuluc = '252157837';      
+        const gidExtraChipuluc = '1813245410';     
+
+        // GIDs para Olmos
+        const gidStockOlmos = '391952692';
+        const gidExtraOlmos = '562959693';
+
+        // GIDs de tablas principales
         const gidRegistros = '481287721';  
         const gidIngresos = '690045193';   
 
         let proyectoActivo = 'Chipuluc'; 
         let pestanaActiva = 'registros';
 
-        function actualizarColoresTema() {
+        function actualizarInterfazPorProyecto() {
             const root = document.documentElement;
+            const metricsPanel = document.getElementById('metrics-panel');
+            const btnIngresos = document.getElementById('btn-ingresos');
+
             if (proyectoActivo === 'Chipuluc') {
                 root.style.setProperty('--active-color', 'var(--chipuluc-color)');
                 root.style.setProperty('--active-light', 'var(--chipuluc-light)');
+                metricsPanel.style.display = 'flex';
+                btnIngresos.style.display = 'block';
             } else if (proyectoActivo === 'Olmos') {
                 root.style.setProperty('--active-color', 'var(--olmos-color)');
                 root.style.setProperty('--active-light', 'var(--olmos-light)');
+                metricsPanel.style.display = 'flex';
+                btnIngresos.style.display = 'block';
             } else if (proyectoActivo === 'Otros') {
                 root.style.setProperty('--active-color', 'var(--otros-color)');
                 root.style.setProperty('--active-light', 'var(--otros-light)');
+                metricsPanel.style.display = 'none';
+                btnIngresos.style.display = 'none';
+
+                // Asegurar que en Otros siempre esté en Registro de Consumo
+                pestanaActiva = 'registros';
+                document.getElementById('btn-registros').classList.add('active');
+                document.getElementById('btn-ingresos').classList.remove('active');
             }
         }
 
@@ -561,7 +582,7 @@
             if (proyecto === 'Olmos') document.getElementById('btn-olmos').classList.add('active');
             if (proyecto === 'Otros') document.getElementById('btn-otros').classList.add('active');
 
-            actualizarColoresTema();
+            actualizarInterfazPorProyecto();
             cargarDatos();
         }
 
@@ -614,7 +635,7 @@
         }
 
         async function cargarDatos() {
-            actualizarColoresTema();
+            actualizarInterfazPorProyecto();
             
             const tbody = document.getElementById('table-body');
             const thead = document.getElementById('table-head');
@@ -626,51 +647,59 @@
             const recargadosValueEl = document.getElementById('recargados-value');
             
             tbody.innerHTML = '<tr><td colspan="10" class="loading">Sincronizando datos...</td></tr>';
-            stockValueEl.innerText = '...';
-            loteValueEl.innerText = '...';
-            recargadosValueEl.innerText = '...';
-            
             inputBusqueda.value = "";
             clearBtn.style.display = 'none';
 
             const noCache = new Date().getTime();
-            
-            const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStock}&range=A1:A2&headers=1&_=${noCache}`;
-            const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtra}&range=A1:B2&headers=1&_=${noCache}`;
-            const gidActual = pestanaActiva === 'registros' ? gidRegistros : gidIngresos;
+
+            // Cargar métricas superiores solo si es Chipuluc u Olmos
+            if (proyectoActivo === 'Chipuluc' || proyectoActivo === 'Olmos') {
+                stockValueEl.innerText = '...';
+                loteValueEl.innerText = '...';
+                recargadosValueEl.innerText = '...';
+
+                const gidStockActual = (proyectoActivo === 'Chipuluc') ? gidStockChipuluc : gidStockOlmos;
+                const gidExtraActual = (proyectoActivo === 'Chipuluc') ? gidExtraChipuluc : gidExtraOlmos;
+
+                const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStockActual}&range=A1:A2&headers=1&_=${noCache}`;
+                const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtraActual}&range=A1:B2&headers=1&_=${noCache}`;
+
+                try {
+                    const responseStock = await fetch(urlStock);
+                    const textStock = await responseStock.text();
+                    const jsonStringStock = textStock.substring(textStock.indexOf('({') + 1, textStock.lastIndexOf('})') + 1);
+                    const dataStock = JSON.parse(jsonStringStock);
+                    
+                    let stockCell = dataStock.table.rows[0].c[0];
+                    let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
+                    stockValueEl.innerText = stockText;
+                } catch (error) {
+                    stockValueEl.innerText = 'Error';
+                }
+
+                try {
+                    const responseExtra = await fetch(urlExtra);
+                    const textExtra = await responseExtra.text();
+                    const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
+                    const dataExtra = JSON.parse(jsonStringExtra);
+                    
+                    let columnasData = dataExtra.table.rows[0].c;
+                    let loteCell = columnasData[0];
+                    let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
+                    loteValueEl.innerText = loteText;
+
+                    let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
+                    let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
+                    recargadosValueEl.innerText = recargadosText;
+                } catch (error) {
+                    loteValueEl.innerText = 'Error';
+                    recargadosValueEl.innerText = 'Error';
+                }
+            }
+
+            // Cargar tabla principal
+            const gidActual = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? gidRegistros : gidIngresos;
             const urlTabla = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidActual}&_=${noCache}`;
-
-            try {
-                const responseStock = await fetch(urlStock);
-                const textStock = await responseStock.text();
-                const jsonStringStock = textStock.substring(textStock.indexOf('({') + 1, textStock.lastIndexOf('})') + 1);
-                const dataStock = JSON.parse(jsonStringStock);
-                
-                let stockCell = dataStock.table.rows[0].c[0];
-                let stockText = (stockCell && stockCell.f) ? stockCell.f : (stockCell && stockCell.v ? stockCell.v : '0');
-                stockValueEl.innerText = stockText;
-            } catch (error) {
-                stockValueEl.innerText = 'Error';
-            }
-
-            try {
-                const responseExtra = await fetch(urlExtra);
-                const textExtra = await responseExtra.text();
-                const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
-                const dataExtra = JSON.parse(jsonStringExtra);
-                
-                let columnasData = dataExtra.table.rows[0].c;
-                let loteCell = columnasData[0];
-                let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
-                loteValueEl.innerText = loteText;
-
-                let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
-                let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
-                recargadosValueEl.innerText = recargadosText;
-            } catch (error) {
-                loteValueEl.innerText = 'Error';
-                recargadosValueEl.innerText = 'Error';
-            }
 
             try {
                 const response = await fetch(urlTabla);
@@ -693,10 +722,8 @@
                 });
                 thead.appendChild(trHead);
 
-                // Definir qué columna usar según la pestaña activa:
-                // - En 'registros' se usa la Columna B (índice 1)
-                // - En 'ingresos' se usa la Columna C (índice 2)
-                let indiceColumnaFiltro = (pestanaActiva === 'registros') ? 1 : 2;
+                // Columna B (índice 1) para 'registros' | Columna C (índice 2) para 'ingresos'
+                let indiceColumnaFiltro = (pestanaActiva === 'registros' || proyectoActivo === 'Otros') ? 1 : 2;
 
                 let rows = data.table.rows.reverse(); 
                 
