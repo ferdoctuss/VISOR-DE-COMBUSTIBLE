@@ -563,7 +563,6 @@
                 metricsPanel.style.display = 'none';
                 btnIngresos.style.display = 'none';
 
-                // Asegurar que en Otros siempre esté en Registro de Consumo
                 pestanaActiva = 'registros';
                 document.getElementById('btn-registros').classList.add('active');
                 document.getElementById('btn-ingresos').classList.remove('active');
@@ -659,11 +658,9 @@
                 recargadosValueEl.innerText = '...';
 
                 const gidStockActual = (proyectoActivo === 'Chipuluc') ? gidStockChipuluc : gidStockOlmos;
-                const gidExtraActual = (proyectoActivo === 'Chipuluc') ? gidExtraChipuluc : gidExtraOlmos;
-
                 const urlStock = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidStockActual}&range=A1:A2&headers=1&_=${noCache}`;
-                const urlExtra = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtraActual}&range=A1:B2&headers=1&_=${noCache}`;
 
+                // Obtener Stock
                 try {
                     const responseStock = await fetch(urlStock);
                     const textStock = await responseStock.text();
@@ -677,23 +674,55 @@
                     stockValueEl.innerText = 'Error';
                 }
 
-                try {
-                    const responseExtra = await fetch(urlExtra);
-                    const textExtra = await responseExtra.text();
-                    const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
-                    const dataExtra = JSON.parse(jsonStringExtra);
-                    
-                    let columnasData = dataExtra.table.rows[0].c;
-                    let loteCell = columnasData[0];
-                    let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
-                    loteValueEl.innerText = loteText;
+                // Obtener Lote y G.Recargados según el proyecto
+                if (proyectoActivo === 'Chipuluc') {
+                    const urlExtraChipuluc = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtraChipuluc}&range=A1:B2&headers=1&_=${noCache}`;
+                    try {
+                        const responseExtra = await fetch(urlExtraChipuluc);
+                        const textExtra = await responseExtra.text();
+                        const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
+                        const dataExtra = JSON.parse(jsonStringExtra);
+                        
+                        let columnasData = dataExtra.table.rows[0].c;
+                        let loteCell = columnasData[0];
+                        let loteText = (loteCell && loteCell.f) ? loteCell.f : (loteCell && loteCell.v ? loteCell.v : '-');
+                        loteValueEl.innerText = loteText;
 
-                    let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
-                    let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
-                    recargadosValueEl.innerText = recargadosText;
-                } catch (error) {
-                    loteValueEl.innerText = 'Error';
-                    recargadosValueEl.innerText = 'Error';
+                        let recargadosCell = columnasData.length > 1 ? columnasData[1] : null;
+                        let recargadosText = (recargadosCell && recargadosCell.f) ? recargadosCell.f : (recargadosCell && recargadosCell.v ? recargadosCell.v : '-');
+                        recargadosValueEl.innerText = recargadosText;
+                    } catch (error) {
+                        loteValueEl.innerText = 'Error';
+                        recargadosValueEl.innerText = 'Error';
+                    }
+                } else if (proyectoActivo === 'Olmos') {
+                    // En Olmos leemos todas las filas (desde fila 2 hacia abajo al usar headers=1)
+                    const urlExtraOlmos = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${gidExtraOlmos}&headers=1&_=${noCache}`;
+                    try {
+                        const responseExtra = await fetch(urlExtraOlmos);
+                        const textExtra = await responseExtra.text();
+                        const jsonStringExtra = textExtra.substring(textExtra.indexOf('({') + 1, textExtra.lastIndexOf('})') + 1);
+                        const dataExtra = JSON.parse(jsonStringExtra);
+                        
+                        // Filtramos filas que no estén totalmente vacías desde la fila 2 hacia abajo
+                        let filasValidas = dataExtra.table.rows.filter(r => r.c && r.c.some(celda => celda && celda.v !== null && String(celda.v).trim() !== ''));
+                        
+                        // N de Lote = cantidad de filas llenas desde la 2 hacia abajo
+                        loteValueEl.innerText = filasValidas.length;
+
+                        // G. Recargados = Columna D (índice 3) de la última fila llena
+                        if (filasValidas.length > 0) {
+                            let ultimaFila = filasValidas[filasValidas.length - 1];
+                            let cellColumnaD = ultimaFila.c[3]; // Índice 3 corresponde a la Columna D
+                            let recargadosText = (cellColumnaD && cellColumnaD.f) ? cellColumnaD.f : (cellColumnaD && cellColumnaD.v !== null ? cellColumnaD.v : '0');
+                            recargadosValueEl.innerText = recargadosText;
+                        } else {
+                            recargadosValueEl.innerText = '0';
+                        }
+                    } catch (error) {
+                        loteValueEl.innerText = 'Error';
+                        recargadosValueEl.innerText = 'Error';
+                    }
                 }
             }
 
