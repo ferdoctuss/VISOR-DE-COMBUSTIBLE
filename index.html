@@ -15,11 +15,11 @@
     <style>
         /* === PALETA DE COLORES MEJORADA Y UNIFICADA === */
         :root {
-            --consumo-color: #2E7D32;       /* Verde institucional */
-            --consumo-light: #E8F5E9;       /* Fondo suave consumo */
+            --consumo-color: #2E7D32;      /* Verde institucional */
+            --consumo-light: #E8F5E9;      /* Fondo suave consumo */
             
-            --ingreso-color: #0277BD;       /* Azul institucional */
-            --ingreso-light: #E1F5FE;       /* Fondo suave ingresos */
+            --ingreso-color: #0277BD;      /* Azul institucional */
+            --ingreso-light: #E1F5FE;      /* Fondo suave ingresos */
             
             --active-color: var(--consumo-color);
             --active-light: var(--consumo-light);
@@ -113,6 +113,35 @@
         .action-btn.reload-btn:hover, .action-btn.reload-btn:active {
             transform: rotate(90deg);
         }
+
+        /* === SELECTOR DE PROYECTOS (BOTONES SUPERIORES) === */
+        .projects-container {
+            display: flex;
+            width: 100%;
+            background: #D1D5DB;
+            padding: 4px;
+            border-radius: 10px;
+            gap: 4px;
+            box-sizing: border-box;
+        }
+        .project-btn {
+            flex: 1;
+            padding: 10px 4px;
+            border-radius: 7px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #4B5563;
+            transition: all 0.25s ease;
+            text-align: center;
+        }
+        .project-btn.active {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         
         /* === PANEL DE MÉTRICAS === */
         .metrics-container {
@@ -178,12 +207,10 @@
             color: var(--text-secondary);
             transition: all 0.25s ease;
         }
-
         .tab-btn.active {
             background: var(--card-bg);
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
-
         #btn-registros.active {
             color: var(--consumo-color);
         }
@@ -230,7 +257,6 @@
             color: var(--active-color);
         }
         
-        /* === ÍCONO DE BORRAR (X) === */
         .clear-search {
             position: absolute;
             right: 12px;
@@ -422,6 +448,13 @@
                 </button>
             </div>
         </div>
+
+        <!-- SELECTOR DE PROYECTOS -->
+        <div class="projects-container">
+            <button id="btn-cutervo" class="project-btn active" onclick="cambiarProyecto('Cutervo')">Chipuluc</button>
+            <button id="btn-olmos" class="project-btn" onclick="cambiarProyecto('Olmos')">Olmos</button>
+            <button id="btn-otros" class="project-btn" onclick="cambiarProyecto('Otros')">Otros</button>
+        </div>
         
         <!-- PANEL DE MÉTRICAS -->
         <div class="metrics-container">
@@ -490,7 +523,23 @@
         const gidRegistros = '481287721';  
         const gidIngresos = '690045193';   
 
+        let proyectoActivo = 'Cutervo'; // Por defecto Chipuluc (Cutervo)
         let pestanaActiva = 'registros';
+
+        function cambiarProyecto(proyecto) {
+            if (proyectoActivo === proyecto) return;
+            proyectoActivo = proyecto;
+
+            document.getElementById('btn-cutervo').classList.remove('active');
+            document.getElementById('btn-olmos').classList.remove('active');
+            document.getElementById('btn-otros').classList.remove('active');
+
+            if (proyecto === 'Cutervo') document.getElementById('btn-cutervo').classList.add('active');
+            if (proyecto === 'Olmos') document.getElementById('btn-olmos').classList.add('active');
+            if (proyecto === 'Otros') document.getElementById('btn-otros').classList.add('active');
+
+            cargarDatos();
+        }
 
         function cambiarPestana(pestana) {
             if (pestanaActiva === pestana) return;
@@ -624,7 +673,21 @@
                 });
                 thead.appendChild(trHead);
 
-                const rows = data.table.rows.reverse(); 
+                // Filtrar filas según la columna C (índice 2) solo si estamos en la pestaña de registros
+                let rows = data.table.rows.reverse(); 
+                
+                if (pestanaActiva === 'registros') {
+                    rows = rows.filter(row => {
+                        let cellC = row.c[2]; // Columna C
+                        let valorC = (cellC && cellC.v) ? String(cellC.v).trim() : '';
+                        return valorC.toLowerCase() === proyectoActivo.toLowerCase();
+                    });
+                }
+
+                if (rows.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="${headers.length}" class="loading">No hay registros para ${proyectoActivo}</td></tr>`;
+                    return;
+                }
                 
                 rows.forEach(row => {
                     let tr = document.createElement('tr');
