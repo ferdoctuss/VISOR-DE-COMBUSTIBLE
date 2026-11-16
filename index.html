@@ -23,8 +23,6 @@
             
             --otros-color: #D97706;      /* Ámbar / Naranja */
             --otros-light: #FEF3C7;
-
-            --ingreso-color: #4B5563;    
             
             --active-color: var(--chipuluc-color);
             --active-light: var(--chipuluc-light);
@@ -695,13 +693,17 @@
                 });
                 thead.appendChild(trHead);
 
-                // Filtrar filas según la columna B (índice 1) para ambas pestañas
+                // Definir qué columna usar según la pestaña activa:
+                // - En 'registros' se usa la Columna B (índice 1)
+                // - En 'ingresos' se usa la Columna C (índice 2)
+                let indiceColumnaFiltro = (pestanaActiva === 'registros') ? 1 : 2;
+
                 let rows = data.table.rows.reverse(); 
                 
                 rows = rows.filter(row => {
-                    let cellB = row.c[1]; // Columna B (índice 1)
-                    let valorB = (cellB && cellB.v) ? String(cellB.v).trim() : '';
-                    return valorB.toLowerCase() === proyectoActivo.toLowerCase();
+                    let cell = row.c[indiceColumnaFiltro];
+                    let valor = (cell && cell.v) ? String(cell.v).trim() : '';
+                    return valor.toLowerCase() === proyectoActivo.toLowerCase();
                 });
 
                 if (rows.length === 0) {
